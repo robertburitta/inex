@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { createContext, useContext, useEffect, useState } from 'react';
-import { 
+import { createContext, useContext, useEffect, useState } from "react";
+import {
   User,
   signInWithPopup,
   GoogleAuthProvider,
@@ -10,9 +10,11 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
-  AuthError
-} from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+  confirmPasswordReset,
+  AuthError,
+} from "firebase/auth";
+import { auth } from "@/lib/firebase";
+import { categoryService } from "@/services/categoryService";
 
 interface AuthContextType {
   user: User | null;
@@ -21,6 +23,10 @@ interface AuthContextType {
   signInWithEmail: (email: string, password: string) => Promise<boolean>;
   signUpWithEmail: (email: string, password: string) => Promise<boolean>;
   resetPassword: (email: string) => Promise<boolean>;
+  confirmResetPassword: (
+    oobCode: string,
+    newPassword: string
+  ) => Promise<boolean>;
   logout: () => Promise<void>;
   error: string | null;
   success: string | null;
@@ -32,34 +38,36 @@ export const useAuth = () => useContext(AuthContext);
 
 const getErrorMessage = (error: AuthError): string => {
   switch (error.code) {
-    case 'auth/email-already-in-use':
-      return 'Ten adres email jest już używany. Spróbuj się zalogować lub użyj innego adresu email.';
-    case 'auth/invalid-email':
-      return 'Nieprawidłowy adres email.';
-    case 'auth/operation-not-allowed':
-      return 'Ta metoda logowania nie jest włączona. Skontaktuj się z administratorem.';
-    case 'auth/weak-password':
-      return 'Hasło jest zbyt słabe. Użyj co najmniej 6 znaków.';
-    case 'auth/user-disabled':
-      return 'To konto zostało wyłączone. Skontaktuj się z administratorem.';
-    case 'auth/user-not-found':
-      return 'Nie znaleziono użytkownika z tym adresem email.';
-    case 'auth/wrong-password':
-      return 'Nieprawidłowe hasło.';
-    case 'auth/too-many-requests':
-      return 'Zbyt wiele prób logowania. Spróbuj ponownie później.';
-    case 'auth/network-request-failed':
-      return 'Problem z połączeniem sieciowym. Sprawdź swoje połączenie internetowe.';
-    case 'auth/popup-closed-by-user':
-      return 'Okno logowania zostało zamknięte. Spróbuj ponownie.';
-    case 'auth/popup-blocked':
-      return 'Okno logowania zostało zablokowane przez przeglądarkę. Sprawdź ustawienia przeglądarki.';
-    case 'auth/cancelled-popup-request':
-      return 'Operacja została anulowana. Spróbuj ponownie.';
-    case 'auth/account-exists-with-different-credential':
-      return 'Konto z tym adresem email już istnieje, ale używa innej metody logowania.';
+    case "auth/email-already-in-use":
+      return "Ten adres email jest już używany. Spróbuj się zalogować lub użyj innego adresu email.";
+    case "auth/invalid-email":
+      return "Nieprawidłowy adres email.";
+    case "auth/operation-not-allowed":
+      return "Ta metoda logowania nie jest włączona. Skontaktuj się z administratorem.";
+    case "auth/weak-password":
+      return "Hasło jest zbyt słabe. Użyj co najmniej 6 znaków.";
+    case "auth/user-disabled":
+      return "To konto zostało wyłączone. Skontaktuj się z administratorem.";
+    case "auth/user-not-found":
+      return "Nie znaleziono użytkownika z tym adresem email.";
+    case "auth/wrong-password":
+      return "Nieprawidłowe hasło.";
+    case "auth/invalid-credential":
+      return "Nieprawidłowy email lub hasło.";
+    case "auth/too-many-requests":
+      return "Zbyt wiele prób logowania. Spróbuj ponownie później.";
+    case "auth/network-request-failed":
+      return "Problem z połączeniem sieciowym. Sprawdź swoje połączenie internetowe.";
+    case "auth/popup-closed-by-user":
+      return "Okno logowania zostało zamknięte. Spróbuj ponownie.";
+    case "auth/popup-blocked":
+      return "Okno logowania zostało zablokowane przez przeglądarkę. Sprawdź ustawienia przeglądarki.";
+    case "auth/cancelled-popup-request":
+      return "Operacja została anulowana. Spróbuj ponownie.";
+    case "auth/account-exists-with-different-credential":
+      return "Konto z tym adresem email już istnieje, ale używa innej metody logowania.";
     default:
-      return 'Wystąpił nieoczekiwany błąd. Spróbuj ponownie później.';
+      return "Wystąpił nieoczekiwany błąd. Spróbuj ponownie później.";
   }
 };
 
@@ -73,6 +81,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       setLoading(false);
+
+      // Ustaw lub usuń ciasteczko z tokenem
+      if (user) {
+        user.getIdToken().then((token) => {
+          document.cookie = `auth-token=${token}; path=/; max-age=3600; SameSite=Lax`;
+        });
+      } else {
+        document.cookie = "auth-token=; path=/; max-age=0; SameSite=Lax";
+      }
     });
 
     return unsubscribe;
@@ -84,10 +101,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
-      setSuccess('Pomyślnie zalogowano przez Google');
+      setSuccess("Pomyślnie zalogowano przez Google");
       return true;
     } catch (error) {
-      console.error('Błąd logowania:', error);
+      console.error("Błąd logowania:", error);
       setError(getErrorMessage(error as AuthError));
       return false;
     }
@@ -98,10 +115,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setSuccess(null);
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      setSuccess('Pomyślnie zalogowano');
+      setSuccess("Pomyślnie zalogowano");
       return true;
     } catch (error) {
-      console.error('Błąd logowania:', error);
+      console.error("Błąd logowania:", error);
       setError(getErrorMessage(error as AuthError));
       return false;
     }
@@ -111,11 +128,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setError(null);
     setSuccess(null);
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      setSuccess('Konto zostało utworzone pomyślnie');
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      setSuccess("Konto zostało utworzone pomyślnie");
       return true;
     } catch (error) {
-      console.error('Błąd rejestracji:', error);
+      console.error("Błąd rejestracji:", error);
       setError(getErrorMessage(error as AuthError));
       return false;
     }
@@ -125,11 +146,31 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setError(null);
     setSuccess(null);
     try {
-      await sendPasswordResetEmail(auth, email);
-      setSuccess('Link do resetowania hasła został wysłany na podany adres email');
+      await sendPasswordResetEmail(auth, email, {
+        url: process.env.NEXT_PUBLIC_APP_URL
+          ? `${process.env.NEXT_PUBLIC_APP_URL}/reset-password`
+          : `${window.location.origin}/reset-password`,
+      });
+      setSuccess(
+        "Link do resetowania hasła został wysłany na podany adres email"
+      );
       return true;
     } catch (error) {
-      console.error('Błąd resetowania hasła:', error);
+      console.error("Błąd resetowania hasła:", error);
+      setError(getErrorMessage(error as AuthError));
+      return false;
+    }
+  };
+
+  const confirmResetPassword = async (oobCode: string, newPassword: string) => {
+    setError(null);
+    setSuccess(null);
+    try {
+      await confirmPasswordReset(auth, oobCode, newPassword);
+      setSuccess("Hasło zostało zmienione pomyślnie");
+      return true;
+    } catch (error) {
+      console.error("Błąd zmiany hasła:", error);
       setError(getErrorMessage(error as AuthError));
       return false;
     }
@@ -141,7 +182,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       await signOut(auth);
     } catch (error) {
-      console.error('Błąd wylogowania:', error);
+      console.error("Błąd wylogowania:", error);
       setError(getErrorMessage(error as AuthError));
     }
   };
@@ -153,9 +194,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     signInWithEmail,
     signUpWithEmail,
     resetPassword,
+    confirmResetPassword,
     logout,
     error,
-    success
+    success,
   };
 
   return (
@@ -163,4 +205,4 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       {!loading && children}
     </AuthContext.Provider>
   );
-}; 
+};
