@@ -1,12 +1,10 @@
 "use client";
 
-import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 export default function Home() {
-  const { user } = useAuth();
   const router = useRouter();
 
   return (

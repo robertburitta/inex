@@ -3,7 +3,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import {
   User,
-  signInWithPopup,
   signInWithRedirect,
   getRedirectResult,
   GoogleAuthProvider,
@@ -16,7 +15,6 @@ import {
   AuthError,
 } from "firebase/auth";
 import { auth } from "@/lib/firebase";
-import { categoryService } from "@/services/categoryService";
 
 interface AuthContextType {
   user: User | null;
@@ -142,11 +140,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setError(null);
     setSuccess(null);
     try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+      await createUserWithEmailAndPassword(auth, email, password);
       setSuccess("Konto zostało utworzone pomyślnie");
       return true;
     } catch (error) {
@@ -161,9 +155,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setSuccess(null);
     try {
       await sendPasswordResetEmail(auth, email, {
-        url: process.env.NEXT_PUBLIC_APP_URL
-          ? `${process.env.NEXT_PUBLIC_APP_URL}/reset-password`
-          : `${window.location.origin}/reset-password`,
+        url: `${window.location.origin}/reset-password`,
       });
       setSuccess(
         "Link do resetowania hasła został wysłany na podany adres email"

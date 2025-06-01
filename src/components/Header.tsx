@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 function getInitials(nameOrEmail: string) {
   if (!nameOrEmail) return "?";
@@ -85,10 +86,13 @@ export default function Header() {
                   aria-label="Menu użytkownika"
                 >
                   {user.photoURL ? (
-                    <img
+                    <Image
                       src={user.photoURL}
                       alt="avatar"
+                      width={40}
+                      height={40}
                       className="w-10 h-10 rounded-full object-cover"
+                      priority={false}
                     />
                   ) : (
                     <span className="text-lg font-bold text-gray-700">

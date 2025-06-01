@@ -3,12 +3,10 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { categoryService } from "@/services/categoryService";
-import { Category, DEFAULT_CATEGORIES } from "@/types/category";
+import { Category } from "@/types/category";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
-import { addDoc, collection } from "firebase/firestore";
-import { db } from "@/lib/firebase";
 import Loader from "@/components/Loader";
 import FormInput from "@/components/FormInput";
 import FormSelect from "@/components/FormSelect";
@@ -102,14 +100,6 @@ export default function CategoriesPage() {
     return <Loader />;
   }
 
-  async function seedDefaultCategories() {
-    const defaultRef = collection(db, "categories-default");
-    for (const cat of DEFAULT_CATEGORIES) {
-      await addDoc(defaultRef, cat);
-    }
-    console.log("Domyślne kategorie zostały dodane!");
-  }
-
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
@@ -123,7 +113,6 @@ export default function CategoriesPage() {
             <PlusIcon className="h-5 w-5 mr-2" />
             Dodaj kategorię
           </button>
-          {/* <button onClick={() => seedDefaultCategories()}>Seed</button> */}
         </div>
 
         {error && (
