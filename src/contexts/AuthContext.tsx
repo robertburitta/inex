@@ -4,6 +4,8 @@ import { createContext, useContext, useEffect, useState } from "react";
 import {
   User,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   GoogleAuthProvider,
   signOut,
   onAuthStateChanged,
@@ -92,6 +94,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
     });
 
+    // Obsługa powrotu z Google (redirect)
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result?.user) {
+          setUser(result.user);
+          setSuccess("Pomyślnie zalogowano przez Google");
+        }
+      })
+      .catch((error) => {
+        if (error) setError(getErrorMessage(error as AuthError));
+      });
+
     return unsubscribe;
   }, []);
 
@@ -100,8 +114,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setSuccess(null);
     const provider = new GoogleAuthProvider();
     try {
-      await signInWithPopup(auth, provider);
-      setSuccess("Pomyślnie zalogowano przez Google");
+      await signInWithRedirect(auth, provider);
+      // Dalej obsłużone przez getRedirectResult
       return true;
     } catch (error) {
       console.error("Błąd logowania:", error);

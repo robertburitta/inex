@@ -12,6 +12,7 @@ import { db } from "@/lib/firebase";
 import Loader from "@/components/Loader";
 import FormInput from "@/components/FormInput";
 import FormSelect from "@/components/FormSelect";
+import Modal from "@/components/Modal";
 
 export default function CategoriesPage() {
   const { user } = useAuth();
@@ -199,114 +200,94 @@ export default function CategoriesPage() {
         </div>
 
         {/* Modal dodawania kategorii */}
-        {showAddModal && (
-          <div
-            className="fixed inset-0 z-40 flex items-center justify-center bg-black/50"
-            onClick={(e) => {
-              if (e.target === e.currentTarget) setShowAddModal(false);
-            }}
-          >
-            <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md relative animate-fade-in">
-              <button
-                onClick={() => setShowAddModal(false)}
-                className="absolute top-3 right-3 w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-gray-700 text-2xl transition-all shadow"
-                aria-label="Zamknij"
-                type="button"
-              >
-                <span aria-hidden="true">×</span>
-              </button>
-              <h2 className="text-xl font-bold mb-4">Dodaj kategorię</h2>
-              <form onSubmit={handleAddCategory} className="space-y-4">
-                <FormInput
-                  label="Nazwa kategorii"
-                  id="name"
-                  value={newCategory.name}
-                  onChange={(e) =>
-                    setNewCategory({ ...newCategory, name: e.target.value })
-                  }
-                  required
-                />
-                <FormSelect
-                  label="Typ"
-                  id="type"
-                  value={newCategory.type}
-                  onChange={(e) =>
-                    setNewCategory({
-                      ...newCategory,
-                      type: e.target.value as "expense" | "income",
-                    })
-                  }
-                >
-                  <option value="expense">Wydatek</option>
-                  <option value="income">Przychód</option>
-                </FormSelect>
-                <FormInput
-                  label="Kolor"
-                  id="color"
-                  type="color"
-                  value={newCategory.color}
-                  onChange={(e) =>
-                    setNewCategory({ ...newCategory, color: e.target.value })
-                  }
-                />
-                <FormInput
-                  label="Ikona"
-                  id="icon"
-                  value={newCategory.icon}
-                  onChange={(e) =>
-                    setNewCategory({ ...newCategory, icon: e.target.value })
-                  }
-                  placeholder="np. 🏠"
-                />
-                <button
-                  type="submit"
-                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                >
-                  <PlusIcon className="h-5 w-5 mr-2" />
-                  Dodaj kategorię
-                </button>
-              </form>
+        <Modal
+          isOpen={showAddModal}
+          onClose={() => setShowAddModal(false)}
+          title="Dodaj kategorię"
+        >
+          <form onSubmit={handleAddCategory} className="space-y-4">
+            <FormInput
+              label="Nazwa kategorii"
+              id="name"
+              value={newCategory.name}
+              onChange={(e) =>
+                setNewCategory({ ...newCategory, name: e.target.value })
+              }
+              required
+            />
+            <FormSelect
+              label="Typ"
+              id="type"
+              value={newCategory.type}
+              onChange={(e) =>
+                setNewCategory({
+                  ...newCategory,
+                  type: e.target.value as "expense" | "income",
+                })
+              }
+            >
+              <option value="expense">Wydatek</option>
+              <option value="income">Przychód</option>
+            </FormSelect>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <FormInput
+                label="Kolor"
+                id="color"
+                type="color"
+                value={newCategory.color}
+                onChange={(e) =>
+                  setNewCategory({ ...newCategory, color: e.target.value })
+                }
+                className="sm:w-1/2"
+              />
+              <FormInput
+                label="Ikona"
+                id="icon"
+                value={newCategory.icon}
+                onChange={(e) =>
+                  setNewCategory({ ...newCategory, icon: e.target.value })
+                }
+                placeholder="np. 🏠"
+                className="sm:w-1/2"
+              />
             </div>
-          </div>
-        )}
+            <button
+              type="submit"
+              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              <PlusIcon className="h-5 w-5 mr-2" />
+              Dodaj kategorię
+            </button>
+          </form>
+        </Modal>
 
         {/* Modal potwierdzenia usuwania */}
-        {showDeleteModal.open && (
-          <div className="fixed inset-0 z-40 flex items-center justify-center bg-black bg-opacity-40">
-            <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-sm relative">
-              <button
-                onClick={() =>
-                  setShowDeleteModal({ open: false, categoryId: null })
-                }
-                className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
-                aria-label="Zamknij"
-              >
-                ×
-              </button>
-              <h2 className="text-xl font-bold mb-4">Usuń kategorię</h2>
-              <p className="mb-6">
-                Czy na pewno chcesz usunąć tę kategorię? Tej operacji nie można
-                cofnąć.
-              </p>
-              <div className="flex justify-end space-x-4">
-                <button
-                  onClick={() =>
-                    setShowDeleteModal({ open: false, categoryId: null })
-                  }
-                  className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300"
-                >
-                  Anuluj
-                </button>
-                <button
-                  onClick={handleDeleteCategory}
-                  className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
-                >
-                  Usuń
-                </button>
-              </div>
-            </div>
+        <Modal
+          isOpen={showDeleteModal.open}
+          onClose={() => setShowDeleteModal({ open: false, categoryId: null })}
+          title="Usuń kategorię"
+        >
+          <p className="mb-6">
+            Czy na pewno chcesz usunąć tę kategorię? Tej operacji nie można
+            cofnąć.
+          </p>
+          <div className="flex justify-end space-x-4">
+            <button
+              onClick={() =>
+                setShowDeleteModal({ open: false, categoryId: null })
+              }
+              className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300"
+            >
+              Anuluj
+            </button>
+            <button
+              onClick={handleDeleteCategory}
+              className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
+            >
+              Usuń
+            </button>
           </div>
-        )}
+        </Modal>
       </main>
       <Footer />
     </div>
