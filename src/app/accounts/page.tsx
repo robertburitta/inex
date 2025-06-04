@@ -115,6 +115,7 @@ export default function AccountsPage() {
       setShowEditModal(false);
       setEditAccount(null);
     } catch (err) {
+      console.error("Błąd edycji konta:", err);
       setError("Nie udało się zaktualizować konta");
     }
   };
@@ -129,6 +130,7 @@ export default function AccountsPage() {
       );
       setShowDeleteModal({ open: false, account: null });
     } catch (err) {
+      console.error("Błąd usuwania konta:", err);
       setError("Nie udało się usunąć konta");
     }
   };
@@ -312,65 +314,67 @@ export default function AccountsPage() {
         }}
         title="Edytuj konto"
       >
-        {editAccount && (
-          <form onSubmit={handleEditAccount} className="space-y-4">
-            <FormInput
-              label="Nazwa konta"
-              id="edit-name"
-              value={editAccount.name}
-              onChange={(e) =>
-                setEditAccount({ ...editAccount, name: e.target.value })
-              }
-              required
-            />
-            <FormSelect
-              label="Typ konta"
-              id="edit-type"
-              value={editAccount.type}
-              onChange={(e) =>
-                setEditAccount({
-                  ...editAccount,
-                  type: e.target.value as "bank" | "cash",
-                })
-              }
+        <form onSubmit={handleEditAccount} className="space-y-4">
+          <FormInput
+            label="Nazwa konta"
+            id="edit-name"
+            value={editAccount?.name || ""}
+            onChange={(e) =>
+              setEditAccount(
+                editAccount ? { ...editAccount, name: e.target.value } : null
+              )
+            }
+            required
+          />
+          <FormSelect
+            label="Typ konta"
+            id="edit-type"
+            value={editAccount?.type || "bank"}
+            onChange={(e) =>
+              setEditAccount(
+                editAccount
+                  ? { ...editAccount, type: e.target.value as "bank" | "cash" }
+                  : null
+              )
+            }
+          >
+            <option value="bank">Konto bankowe</option>
+            <option value="cash">Gotówka</option>
+          </FormSelect>
+          <FormInput
+            label="Saldo"
+            id="edit-balance"
+            type="number"
+            step="0.01"
+            value={editAccount?.balance ?? 0}
+            onChange={(e) =>
+              setEditAccount(
+                editAccount
+                  ? { ...editAccount, balance: parseFloat(e.target.value) || 0 }
+                  : null
+              )
+            }
+            required
+          />
+          <div className="flex justify-end space-x-3 mt-6">
+            <button
+              type="button"
+              onClick={() => {
+                setShowEditModal(false);
+                setEditAccount(null);
+              }}
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
-              <option value="bank">Konto bankowe</option>
-              <option value="cash">Gotówka</option>
-            </FormSelect>
-            <FormInput
-              label="Saldo"
-              id="edit-balance"
-              type="number"
-              step="0.01"
-              value={editAccount.balance}
-              onChange={(e) =>
-                setEditAccount({
-                  ...editAccount,
-                  balance: parseFloat(e.target.value) || 0,
-                })
-              }
-              required
-            />
-            <div className="flex justify-end space-x-3 mt-6">
-              <button
-                type="button"
-                onClick={() => {
-                  setShowEditModal(false);
-                  setEditAccount(null);
-                }}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              >
-                Anuluj
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              >
-                Zapisz zmiany
-              </button>
-            </div>
-          </form>
-        )}
+              Anuluj
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Zapisz zmiany
+            </button>
+          </div>
+        </form>
       </Modal>
 
       {/* Modal potwierdzenia usunięcia */}

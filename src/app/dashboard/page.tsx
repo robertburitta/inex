@@ -8,7 +8,6 @@ import Footer from "@/components/Footer";
 import Loader from "@/components/Loader";
 import { accountService } from "@/services/accountService";
 import { Account } from "@/types/account";
-import { motion } from "framer-motion";
 import Card from "@/components/Card";
 
 export default function Dashboard() {

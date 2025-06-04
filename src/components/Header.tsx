@@ -1,10 +1,11 @@
 "use client";
 
 import { useAuth } from "@/contexts/AuthContext";
-import { useRouter } from "next/navigation";
-import { useState, useRef, useEffect } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import { useState, useRef, useEffect, Fragment } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { Transition } from "@headlessui/react";
 
 function getInitials(nameOrEmail: string) {
   if (!nameOrEmail) return "?";
@@ -17,6 +18,7 @@ function getInitials(nameOrEmail: string) {
 export default function Header() {
   const { user, logout } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -50,7 +52,7 @@ export default function Header() {
   ];
 
   return (
-    <nav className="bg-white/90 shadow-sm sticky top-0 z-30 backdrop-blur">
+    <header className=" bg-white shadow-sm sticky top-0 z-50 backdrop-blur">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           {/* Logo */}
@@ -100,8 +102,17 @@ export default function Header() {
                     </span>
                   )}
                 </button>
-                {isDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-2 z-50 animate-fade-in">
+                <Transition
+                  as={Fragment}
+                  show={isDropdownOpen}
+                  enter="transition ease-out duration-100"
+                  enterFrom="transform opacity-0 scale-95"
+                  enterTo="transform opacity-100 scale-100"
+                  leave="transition ease-in duration-75"
+                  leaveFrom="transform opacity-100 scale-100"
+                  leaveTo="transform opacity-0 scale-95"
+                >
+                  <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-2 z-50">
                     <Link
                       href="/settings"
                       className="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors"
@@ -116,7 +127,7 @@ export default function Header() {
                       Wyloguj się
                     </button>
                   </div>
-                )}
+                </Transition>
               </div>
             ) : (
               <div className="hidden md:flex items-center space-x-2">
@@ -138,38 +149,22 @@ export default function Header() {
             <div className="md:hidden flex items-center">
               <button
                 onClick={() => setIsMenuOpen((v) => !v)}
-                className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+                className="relative w-10 h-10 flex items-center justify-center focus:outline-none group"
+                aria-label={isMenuOpen ? "Zamknij menu" : "Otwórz menu"}
               >
-                <span className="sr-only">Otwórz menu</span>
-                {!isMenuOpen ? (
-                  <svg
-                    className="block h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 6h16M4 12h16M4 18h16"
-                    />
-                  </svg>
-                ) : (
-                  <svg
-                    className="block h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                )}
+                {/* Hamburger/X animowany */}
+                <span
+                  className={`absolute left-2 right-2 h-0.5 bg-gray-800 rounded transition-all duration-300 ease-in-out
+                    ${isMenuOpen ? "rotate-45 top-5" : "top-3"}`}
+                />
+                <span
+                  className={`absolute left-2 right-2 h-0.5 bg-gray-800 rounded transition-all duration-300 ease-in-out
+                    ${isMenuOpen ? "opacity-0 top-5" : "opacity-100 top-5"}`}
+                />
+                <span
+                  className={`absolute left-2 right-2 h-0.5 bg-gray-800 rounded transition-all duration-300 ease-in-out
+                    ${isMenuOpen ? "-rotate-45 top-5" : "top-7"}`}
+                />
               </button>
             </div>
           </div>
@@ -177,35 +172,50 @@ export default function Header() {
       </div>
 
       {/* Menu mobilne */}
-      {isMenuOpen && (
-        <div className="md:hidden bg-white border-t border-gray-200 shadow animate-fade-in">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            {user &&
-              mainMenu.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="block px-3 py-2 rounded-md text-gray-700 hover:bg-blue-50 hover:text-blue-700 font-medium"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {item.label}
-                </Link>
-              ))}
+      <Transition
+        as="div"
+        show={isMenuOpen}
+        enter="transition ease-out duration-200"
+        enterFrom="opacity-0 -translate-y-4"
+        enterTo="opacity-100 translate-y-0"
+        leave="transition ease-in duration-150"
+        leaveFrom="opacity-100 translate-y-0"
+        leaveTo="opacity-0 -translate-y-4"
+      >
+        {/* Panel wysuwany spod nagłówka */}
+        <div className="fixed left-0 right-0 z-50 bg-white shadow-xl px-6 py-8 flex flex-col md:hidden">
+          <nav className="flex-1 flex flex-col gap-2">
+            {mainMenu.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`block rounded-lg px-4 py-3 text-lg font-semibold leading-7 transition-colors ${
+                  pathname === item.href
+                    ? "text-blue-600 bg-blue-50"
+                    : "text-gray-900 hover:bg-gray-50"
+                }`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+          <div className="mt-8 border-t border-gray-200 pt-6 flex flex-col gap-2">
             {user ? (
               <>
                 <Link
                   href="/settings"
-                  className="block px-3 py-2 rounded-md text-gray-700 hover:bg-blue-50 hover:text-blue-700 font-medium"
+                  className="block rounded-lg px-4 py-3 text-lg font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Ustawienia konta
                 </Link>
                 <button
+                  className="block w-full text-left rounded-lg px-4 py-3 text-lg font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                   onClick={() => {
                     handleLogout();
                     setIsMenuOpen(false);
                   }}
-                  className="block w-full text-left px-3 py-2 rounded-md text-red-600 hover:bg-red-50 font-medium"
                 >
                   Wyloguj się
                 </button>
@@ -217,7 +227,7 @@ export default function Header() {
                     router.push("/login");
                     setIsMenuOpen(false);
                   }}
-                  className="block w-full text-left px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100 font-medium"
+                  className="block w-full text-left rounded-lg px-4 py-3 text-lg font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                 >
                   Zaloguj się
                 </button>
@@ -226,7 +236,7 @@ export default function Header() {
                     router.push("/register");
                     setIsMenuOpen(false);
                   }}
-                  className="block w-full text-left px-3 py-2 rounded-md text-blue-600 hover:bg-blue-50 font-medium"
+                  className="block w-full text-left rounded-lg px-4 py-3 text-lg font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                 >
                   Rozpocznij za darmo
                 </button>
@@ -234,7 +244,7 @@ export default function Header() {
             )}
           </div>
         </div>
-      )}
-    </nav>
+      </Transition>
+    </header>
   );
 }

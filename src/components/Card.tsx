@@ -21,19 +21,28 @@ const Card: React.FC<CardProps> = ({
 }) => {
   if (variant === "extended") {
     // Helpery do bezpiecznego wyciągania children
-    const isReactElement = (el: any): el is React.ReactElement =>
-      el && typeof el === "object" && "props" in el;
+    const isReactElement = (
+      el: unknown
+    ): el is React.ReactElement<
+      unknown,
+      string | React.JSXElementConstructor<unknown>
+    > => !!el && typeof el === "object" && "props" in el;
+
     let mainValue = value;
     let subValue = null;
-    if (
-      isReactElement(value) &&
-      (value as React.ReactElement<any, any>).props &&
-      Array.isArray((value as React.ReactElement<any, any>).props.children) &&
-      (value as React.ReactElement<any, any>).props.children.length === 2
-    ) {
-      mainValue = (value as React.ReactElement<any, any>).props.children[0];
-      subValue = (value as React.ReactElement<any, any>).props.children[1];
+
+    if (isReactElement(value)) {
+      const element = value as React.ReactElement<
+        unknown,
+        string | React.JSXElementConstructor<unknown>
+      >;
+      const { children: elChildren } = element.props as { children?: unknown };
+      if (Array.isArray(elChildren) && elChildren.length === 2) {
+        mainValue = elChildren[0];
+        subValue = elChildren[1];
+      }
     }
+
     return (
       <motion.div
         initial={{ opacity: 0, y: 30 }}
