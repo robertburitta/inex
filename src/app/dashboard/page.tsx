@@ -1,20 +1,49 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Loader from "@/components/Loader";
 import { accountService } from "@/services/accountService";
+import { categoryService } from "@/services/categoryService";
 import { Account } from "@/types/account";
+import { Category } from "@/types/category";
 import Card from "@/components/Card";
+import AddTransactionModal from "@/components/AddTransactionModal";
+import Button from "@/components/Button";
+import { PlusIcon } from "@heroicons/react/24/outline";
+import { transactionService } from "@/services/transactionService";
+import { Transaction } from "@/types/transaction";
 
 export default function Dashboard() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const [accounts, setAccounts] = useState<Account[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchTransactions = useCallback(async () => {
+    if (!user) return;
+
+    try {
+      setIsLoading(true);
+      setError(null);
+      const userTransactions = await transactionService.getTransactions(
+        user.uid
+      );
+      setTransactions(userTransactions);
+    } catch (err) {
+      console.error("Błąd pobierania transakcji:", err);
+      setError("Nie udało się pobrać transakcji");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user]);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -28,7 +57,14 @@ export default function Dashboard() {
       (async () => {
         setIsLoading(true);
         const userAccounts = await accountService.getUserAccounts(user.uid);
-        if (!cancelled) setAccounts(userAccounts);
+        const defaultCategories = await categoryService.getDefaultCategories();
+        const userCategories = await categoryService.getUserCategories(
+          user.uid
+        );
+        if (!cancelled) {
+          setAccounts(userAccounts);
+          setCategories([...userCategories, ...defaultCategories]);
+        }
         setIsLoading(false);
       })();
     }
@@ -41,7 +77,30 @@ export default function Dashboard() {
     return <Loader />;
   }
 
+  if (error) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-grow flex items-center justify-center">
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="text-center">
+              <h2 className="text-xl font-semibold text-red-600 mb-4">
+                Wystąpił błąd
+              </h2>
+              <p className="text-gray-600 mb-4">{error}</p>
+              <Button variant="blue" onClick={() => window.location.reload()}>
+                Spróbuj ponownie
+              </Button>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
   const totalBalance = accounts.reduce((sum, acc) => sum + acc.balance, 0);
+
   const formatBalance = (balance: number) =>
     new Intl.NumberFormat("pl-PL", {
       style: "currency",
@@ -116,30 +175,46 @@ export default function Dashboard() {
           />
         </div>
 
-        {/* Przyciski akcji */}
-        <div className="mt-8 flex flex-wrap gap-4">
-          <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
-            Dodaj przychód
-          </button>
-          <button className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors">
-            Dodaj wydatek
-          </button>
-        </div>
-
-        {/* Tabela ostatnich transakcji */}
-        <div className="mt-10">
-          <h2 className="text-lg font-medium text-gray-900">
+        <div className="flex justify-between items-center mt-8">
+          <h2 className="text-xl font-medium text-gray-900">
             Ostatnie transakcje
           </h2>
-          <div className="mt-4 bg-white shadow overflow-hidden sm:rounded-lg">
-            <div className="px-4 py-5 sm:p-6">
-              <p className="text-gray-500 text-center">Brak transakcji</p>
-            </div>
+          <Button
+            variant="blue"
+            type="button"
+            onClick={() => setIsModalOpen(true)}
+          >
+            <PlusIcon className="h-5 w-5" />
+            Dodaj transakcję
+          </Button>
+        </div>
+
+        <div className="mt-4 bg-white shadow overflow-hidden sm:rounded-lg">
+          <div className="px-4 py-5 sm:p-6">
+            {transactions.map((transaction) => (
+              <p key={transaction.id}>{transaction.name}</p>
+            ))}
+            {transactions.length === 0 && (
+              <p className="text-gray-500 text-center">
+                Nie dodano jeszcze żadnych transakcji
+              </p>
+            )}
           </div>
         </div>
       </main>
 
       <Footer />
+
+      {user && (
+        <AddTransactionModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          userId={user?.uid}
+          onTransactionAdded={fetchTransactions}
+          categories={categories}
+          accounts={accounts}
+        />
+      )}
     </div>
   );
 }

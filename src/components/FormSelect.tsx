@@ -11,6 +11,7 @@ const FormSelect: React.FC<FormSelectProps> = ({
   label,
   id,
   children,
+  required = false,
   ...props
 }) => (
   <div>
@@ -19,6 +20,7 @@ const FormSelect: React.FC<FormSelectProps> = ({
       className="block text-sm font-medium text-gray-700 mb-1"
     >
       {label}
+      {required && <span className="text-red-500 ml-1">*</span>}
     </label>
     <div className="relative">
       <select
@@ -28,7 +30,6 @@ const FormSelect: React.FC<FormSelectProps> = ({
       >
         {children}
       </select>
-      {/* Ikona strzałki */}
       <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 flex items-center text-gray-400">
         <svg
           className="w-5 h-5"

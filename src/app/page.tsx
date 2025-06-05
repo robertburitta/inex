@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import Button from "@/components/Button";
+import { ArrowLongRightIcon } from "@heroicons/react/24/outline";
 
 export default function Home() {
   const router = useRouter();
@@ -31,12 +33,13 @@ export default function Home() {
                   </p>
                   <div className="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
                     <div className="rounded-md shadow">
-                      <button
+                      <Button
+                        variant="blue"
+                        size="xl"
                         onClick={() => router.push("/register")}
-                        className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 md:py-4 md:text-lg md:px-10"
                       >
                         Rozpocznij za darmo
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -337,25 +340,14 @@ export default function Home() {
             </div>
 
             <div className="mt-10 text-center">
-              <button
+              <Button
+                variant="blue"
+                size="lg"
                 onClick={() => router.push("/register")}
-                className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
               >
                 Rozpocznij za darmo
-                <svg
-                  className="ml-2 -mr-1 w-5 h-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 7l5 5m0 0l-5 5m5-5H6"
-                  />
-                </svg>
-              </button>
+                <ArrowLongRightIcon className="h-5 w-5" />
+              </Button>
             </div>
           </div>
         </div>

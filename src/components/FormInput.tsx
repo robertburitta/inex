@@ -12,6 +12,7 @@ export default function FormInput({
   label,
   error,
   className = "",
+  required = false,
   ...props
 }: FormInputProps) {
   return (
@@ -21,12 +22,13 @@ export default function FormInput({
         className="block text-sm font-medium text-gray-700"
       >
         {label}
+        {required && <span className="text-red-500 ml-1">*</span>}
       </label>
       <div className="mt-1">
         {props.type === "color" ? (
-          <div className="relative w-full h-11 flex items-center border border-gray-300 rounded-md bg-gray-50 px-3 py-2 shadow-sm">
+          <div className="relative w-full flex items-center border border-gray-300 rounded-md bg-gray-50 px-3 py-2 shadow-sm">
             <span
-              className="inline-block w-full h-7 rounded-md border border-gray-200"
+              className="inline-block w-full h-5 rounded-md border border-gray-200"
               style={{ backgroundColor: props.value as string }}
             />
             <input

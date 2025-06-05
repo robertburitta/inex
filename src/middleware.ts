@@ -8,12 +8,10 @@ export function middleware(request: NextRequest) {
     request.nextUrl.pathname.startsWith("/register") ||
     request.nextUrl.pathname.startsWith("/reset-password");
 
-  // Jeśli użytkownik jest na stronie wymagającej autoryzacji i nie jest zalogowany
   if (!authToken && !isAuthPage) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // Jeśli użytkownik jest zalogowany i próbuje wejść na stronę logowania/rejestracji
   if (authToken && isAuthPage) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }

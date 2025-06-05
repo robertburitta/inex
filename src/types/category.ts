@@ -1,7 +1,9 @@
+import { TransactionType } from "./transaction";
+
 export interface Category {
   id: string;
   name: string;
-  type: "expense" | "income";
+  type: TransactionType;
   color: string;
   icon: string;
   isDefault: boolean;

@@ -6,12 +6,12 @@ import {
   deleteDoc,
   query,
   orderBy,
+  updateDoc,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Category } from "@/types/category";
 
 export const categoryService = {
-  // Pobierz domyślne kategorie
   async getDefaultCategories(): Promise<Category[]> {
     const defaultRef = collection(db, "categories-default");
     const q = query(defaultRef, orderBy("name"));
@@ -21,7 +21,6 @@ export const categoryService = {
     );
   },
 
-  // Pobierz kategorie użytkownika
   async getUserCategories(userId: string): Promise<Category[]> {
     const userRef = collection(db, "users", userId, "categories");
     const q = query(userRef, orderBy("name"));
@@ -31,7 +30,6 @@ export const categoryService = {
     );
   },
 
-  // Dodaj nową kategorię użytkownika
   async addCategory(
     userId: string,
     category: Omit<Category, "id" | "userId" | "isDefault">
@@ -44,7 +42,17 @@ export const categoryService = {
     return docRef.id;
   },
 
-  // Usuń kategorię użytkownika
+  async updateCategory(userId: string, category: Category): Promise<void> {
+    const categoryRef = doc(db, "users", userId, "categories", category.id);
+    await updateDoc(categoryRef, {
+      name: category.name,
+      type: category.type,
+      color: category.color,
+      icon: category.icon,
+      isDefault: category.isDefault,
+    });
+  },
+
   async deleteCategory(userId: string, categoryId: string): Promise<void> {
     const categoryRef = doc(db, "users", userId, "categories", categoryId);
     await deleteDoc(categoryRef);

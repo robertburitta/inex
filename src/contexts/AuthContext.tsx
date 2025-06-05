@@ -80,8 +80,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       setLoading(false);
-
-      // Ustaw lub usuń ciasteczko z tokenem
       if (user) {
         user.getIdToken().then((token) => {
           document.cookie = `auth-token=${token}; path=/; max-age=3600; SameSite=Lax`;

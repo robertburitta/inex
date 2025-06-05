@@ -20,7 +20,6 @@ const Card: React.FC<CardProps> = ({
   ...motionProps
 }) => {
   if (variant === "extended") {
-    // Helpery do bezpiecznego wyciągania children
     const isReactElement = (
       el: unknown
     ): el is React.ReactElement<
@@ -68,7 +67,7 @@ const Card: React.FC<CardProps> = ({
       </motion.div>
     );
   }
-  // Domyślny wariant (horizontal)
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
