@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react";
-import Modal from "./Modal";
-import FormInput from "./FormInput";
-import FormSelect from "./FormSelect";
-import FormIconSelect from "./FormIconSelect";
-import Button from "./Button";
+import React, { useEffect, useState } from "react";
 import { categoryService } from "@/services/categoryService";
 import { Category } from "@/types/category";
 import { TransactionType } from "@/types/transaction";
+import Button from "./Button";
+import FormIconSelect from "./FormIconSelect";
+import FormInput from "./FormInput";
+import FormSelect from "./FormSelect";
+import Modal from "./Modal";
 
 interface EditCategoryModalProps {
   isOpen: boolean;
@@ -16,13 +16,7 @@ interface EditCategoryModalProps {
   onCategoryUpdated: () => void;
 }
 
-const EditCategoryModal: React.FC<EditCategoryModalProps> = ({
-  isOpen,
-  onClose,
-  category,
-  userId,
-  onCategoryUpdated,
-}) => {
+const EditCategoryModal: React.FC<EditCategoryModalProps> = ({ isOpen, onClose, category, userId, onCategoryUpdated }) => {
   const [editedCategory, setEditedCategory] = useState<Category | null>(null);
 
   useEffect(() => {
@@ -47,15 +41,20 @@ const EditCategoryModal: React.FC<EditCategoryModalProps> = ({
   if (!editedCategory) return null;
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Edytuj kategorię">
-      <form onSubmit={handleUpdateCategory} className="space-y-4">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Edytuj kategorię"
+    >
+      <form
+        onSubmit={handleUpdateCategory}
+        className="space-y-4"
+      >
         <FormInput
           label="Nazwa kategorii"
           id="name"
           value={editedCategory.name}
-          onChange={(e) =>
-            setEditedCategory({ ...editedCategory, name: e.target.value })
-          }
+          onChange={(e) => setEditedCategory({ ...editedCategory, name: e.target.value })}
           required
         />
         <FormSelect
@@ -76,9 +75,7 @@ const EditCategoryModal: React.FC<EditCategoryModalProps> = ({
         <FormIconSelect
           label="Ikona"
           value={editedCategory.icon}
-          onChange={(value) =>
-            setEditedCategory({ ...editedCategory, icon: value })
-          }
+          onChange={(value) => setEditedCategory({ ...editedCategory, icon: value })}
           required
         />
         <FormInput
@@ -86,16 +83,21 @@ const EditCategoryModal: React.FC<EditCategoryModalProps> = ({
           id="color"
           type="color"
           value={editedCategory.color}
-          onChange={(e) =>
-            setEditedCategory({ ...editedCategory, color: e.target.value })
-          }
+          onChange={(e) => setEditedCategory({ ...editedCategory, color: e.target.value })}
           required
         />
-        <div className="flex justify-end space-x-3 mt-6">
-          <Button variant="gray" type="button" onClick={onClose}>
+        <div className="mt-6 flex justify-end space-x-3">
+          <Button
+            variant="gray"
+            type="button"
+            onClick={onClose}
+          >
             Anuluj
           </Button>
-          <Button variant="blue" type="submit">
+          <Button
+            variant="blue"
+            type="submit"
+          >
             Zapisz zmiany
           </Button>
         </div>

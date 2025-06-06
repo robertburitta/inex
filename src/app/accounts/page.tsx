@@ -1,19 +1,19 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import Loader from "@/components/Loader";
-import { PlusIcon, TrashIcon, PencilIcon } from "@heroicons/react/24/outline";
+import { useEffect, useState } from "react";
+import { PencilIcon, PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { useAuth } from "@/contexts/AuthContext";
 import { accountService } from "@/services/accountService";
 import { Account, AccountType } from "@/types/account";
-import Card from "@/components/Card";
-import Button from "@/components/Button";
 import AddAccountModal from "@/components/AddAccountModal";
-import EditAccountModal from "@/components/EditAccountModal";
+import Button from "@/components/Button";
+import Card from "@/components/Card";
 import DeleteAccountModal from "@/components/DeleteAccountModal";
+import EditAccountModal from "@/components/EditAccountModal";
+import Footer from "@/components/Footer";
+import Header from "@/components/Header";
+import Loader from "@/components/Loader";
 
 export default function AccountsPage() {
   const { user, loading } = useAuth();
@@ -84,11 +84,11 @@ export default function AccountsPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="flex min-h-screen flex-col bg-gray-50">
       <Header />
 
-      <main className="flex-grow w-full max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center mb-8">
+      <main className="mx-auto w-full max-w-7xl flex-grow px-4 py-10 sm:px-6 lg:px-8">
+        <div className="mb-8 flex items-center justify-between">
           <h1 className="text-2xl font-bold text-gray-900">Moje konta</h1>
           <Button
             variant="blue"
@@ -100,23 +100,18 @@ export default function AccountsPage() {
           </Button>
         </div>
 
-        {error && (
-          <div className="mb-4 p-4 text-sm text-red-700 bg-red-100 rounded-lg">
-            {error}
-          </div>
-        )}
+        {error && <div className="mb-4 rounded-lg bg-red-100 p-4 text-sm text-red-700">{error}</div>}
 
         {accounts.length === 0 ? (
-          <div className="flex flex-col items-center justify-center text-center py-12 bg-white rounded-lg shadow">
-            <div className="text-6xl mb-4">🏦</div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              Nie masz jeszcze żadnych kont
-            </h3>
-            <p className="text-gray-500 mb-6">
-              Dodaj swoje pierwsze konto, aby rozpocząć zarządzanie finansami
-            </p>
-            <Button variant="blue" onClick={() => setShowAddModal(true)}>
-              <PlusIcon className="h-5 w-5 mr-2" />
+          <div className="flex flex-col items-center justify-center rounded-lg bg-white py-12 text-center shadow">
+            <div className="mb-4 text-6xl">🏦</div>
+            <h3 className="mb-2 text-lg font-medium text-gray-900">Nie masz jeszcze żadnych kont</h3>
+            <p className="mb-6 text-gray-500">Dodaj swoje pierwsze konto, aby rozpocząć zarządzanie finansami</p>
+            <Button
+              variant="blue"
+              onClick={() => setShowAddModal(true)}
+            >
+              <PlusIcon className="mr-2 h-5 w-5" />
               Dodaj pierwsze konto
             </Button>
           </div>
@@ -129,27 +124,23 @@ export default function AccountsPage() {
                 title={account.name}
                 value={
                   <>
-                    <span className="text-2xl font-semibold text-gray-900">
-                      {formatBalance(account.balance)}
-                    </span>
-                    <span className="block text-xs text-gray-500 mt-1">
-                      {account.type === AccountType.Bank
-                        ? "Konto bankowe"
-                        : "Gotówka"}
+                    <span className="text-2xl font-semibold text-gray-900">{formatBalance(account.balance)}</span>
+                    <span className="mt-1 block text-xs text-gray-500">
+                      {account.type === AccountType.Bank ? "Konto bankowe" : "Gotówka"}
                     </span>
                   </>
                 }
                 transition={{ delay: i * 0.05, duration: 0.3 }}
                 variant="extended"
               >
-                <div className="flex gap-2 ml-auto">
+                <div className="ml-auto flex gap-2">
                   <button
                     title="Edytuj"
                     onClick={() => {
                       setEditAccount(account);
                       setShowEditModal(true);
                     }}
-                    className="p-2 rounded-full hover:bg-blue-100 text-blue-600"
+                    className="rounded-full p-2 text-blue-600 hover:bg-blue-100"
                   >
                     <PencilIcon className="h-5 w-5" />
                   </button>
@@ -159,7 +150,7 @@ export default function AccountsPage() {
                       setDeleteAccount(account);
                       setShowDeleteModal(true);
                     }}
-                    className="p-2 rounded-full hover:bg-red-100 text-red-600"
+                    className="rounded-full p-2 text-red-600 hover:bg-red-100"
                   >
                     <TrashIcon className="h-5 w-5" />
                   </button>

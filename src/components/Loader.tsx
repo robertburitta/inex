@@ -4,9 +4,9 @@ import React from "react";
 
 export default function Loader() {
   return (
-    <div className="flex items-center justify-center min-h-screen w-full">
+    <div className="flex min-h-screen w-full items-center justify-center">
       <svg
-        className="animate-spin h-10 w-10 text-blue-600"
+        className="h-10 w-10 animate-spin text-blue-600"
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"

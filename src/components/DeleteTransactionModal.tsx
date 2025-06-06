@@ -1,8 +1,8 @@
 import React from "react";
-import Modal from "./Modal";
-import Button from "./Button";
 import { transactionService } from "@/services/transactionService";
 import { Transaction } from "@/types/transaction";
+import Button from "./Button";
+import Modal from "./Modal";
 
 interface DeleteTransactionModalProps {
   isOpen: boolean;
@@ -12,13 +12,7 @@ interface DeleteTransactionModalProps {
   onTransactionDeleted: () => void;
 }
 
-const DeleteTransactionModal: React.FC<DeleteTransactionModalProps> = ({
-  isOpen,
-  onClose,
-  transaction,
-  userId,
-  onTransactionDeleted,
-}) => {
+const DeleteTransactionModal: React.FC<DeleteTransactionModalProps> = ({ isOpen, onClose, transaction, userId, onTransactionDeleted }) => {
   const handleDeleteTransaction = async () => {
     if (!transaction) return;
 
@@ -32,17 +26,26 @@ const DeleteTransactionModal: React.FC<DeleteTransactionModalProps> = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Usuń transakcję">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Usuń transakcję"
+    >
       <div className="space-y-4">
-        <p className="text-gray-700">
-          Czy na pewno chcesz usunąć tę transakcję? Tej operacji nie można
-          cofnąć.
-        </p>
-        <div className="flex justify-end space-x-3 mt-6">
-          <Button variant="gray" type="button" onClick={onClose}>
+        <p className="text-gray-700">Czy na pewno chcesz usunąć tę transakcję? Tej operacji nie można cofnąć.</p>
+        <div className="mt-6 flex justify-end space-x-3">
+          <Button
+            variant="gray"
+            type="button"
+            onClick={onClose}
+          >
             Anuluj
           </Button>
-          <Button variant="red" type="button" onClick={handleDeleteTransaction}>
+          <Button
+            variant="red"
+            type="button"
+            onClick={handleDeleteTransaction}
+          >
             Usuń
           </Button>
         </div>

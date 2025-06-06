@@ -19,16 +19,10 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
 }
 
-const Button: React.FC<ButtonProps> = ({
-  variant = "blue",
-  size = "md",
-  children,
-  className = "",
-  ...props
-}) => {
+const Button: React.FC<ButtonProps> = ({ variant = "blue", size = "md", children, className = "", ...props }) => {
   return (
     <button
-      className={`inline-flex items-center justify-center gap-1 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors cursor-pointer ${variantStyles[variant]} ${sizeStyles[size]} ${className}`}
+      className={`inline-flex cursor-pointer items-center justify-center gap-1 rounded-md font-medium transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none ${variantStyles[variant]} ${sizeStyles[size]} ${className}`}
       {...props}
     >
       {children}

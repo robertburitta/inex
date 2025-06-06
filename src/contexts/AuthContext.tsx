@@ -1,18 +1,18 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
 import {
-  User,
-  signInWithPopup,
-  GoogleAuthProvider,
-  signOut,
-  onAuthStateChanged,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  sendPasswordResetEmail,
-  confirmPasswordReset,
   AuthError,
+  GoogleAuthProvider,
+  User,
+  confirmPasswordReset,
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+  sendPasswordResetEmail,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  signOut,
 } from "firebase/auth";
+import { createContext, useContext, useEffect, useState } from "react";
 import { auth } from "@/lib/firebase";
 
 interface AuthContextType {
@@ -22,10 +22,7 @@ interface AuthContextType {
   signInWithEmail: (email: string, password: string) => Promise<boolean>;
   signUpWithEmail: (email: string, password: string) => Promise<boolean>;
   resetPassword: (email: string) => Promise<boolean>;
-  confirmResetPassword: (
-    oobCode: string,
-    newPassword: string
-  ) => Promise<boolean>;
+  confirmResetPassword: (oobCode: string, newPassword: string) => Promise<boolean>;
   logout: () => Promise<void>;
   error: string | null;
   success: string | null;
@@ -142,9 +139,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       await sendPasswordResetEmail(auth, email, {
         url: `${window.location.origin}/reset-password`,
       });
-      setSuccess(
-        "Link do resetowania hasła został wysłany na podany adres email"
-      );
+      setSuccess("Link do resetowania hasła został wysłany na podany adres email");
       return true;
     } catch (error) {
       console.error("Błąd resetowania hasła:", error);
@@ -191,9 +186,5 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     success,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {!loading && children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;
 };

@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
-import Modal from "./Modal";
+import React, { useEffect, useState } from "react";
+import { transactionService } from "@/services/transactionService";
+import { Category } from "@/types/category";
+import { Transaction, TransactionType } from "@/types/transaction";
+import Button from "./Button";
 import FormInput from "./FormInput";
 import FormSelect from "./FormSelect";
-import Button from "./Button";
-import { transactionService } from "@/services/transactionService";
-import { Transaction, TransactionType } from "@/types/transaction";
-import { Category } from "@/types/category";
+import Modal from "./Modal";
 
 interface EditTransactionModalProps {
   isOpen: boolean;
@@ -24,8 +24,7 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
   categories,
   onTransactionUpdated,
 }) => {
-  const [editedTransaction, setEditedTransaction] =
-    useState<Transaction | null>(null);
+  const [editedTransaction, setEditedTransaction] = useState<Transaction | null>(null);
 
   useEffect(() => {
     if (transaction) {
@@ -38,11 +37,7 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
     if (!editedTransaction) return;
 
     try {
-      await transactionService.updateTransaction(
-        userId,
-        editedTransaction.id,
-        editedTransaction
-      );
+      await transactionService.updateTransaction(userId, editedTransaction.id, editedTransaction);
       onTransactionUpdated();
       onClose();
     } catch (error) {
@@ -52,13 +47,18 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
 
   if (!editedTransaction) return null;
 
-  const filteredCategories = categories.filter(
-    (category) => category.type === editedTransaction.type
-  );
+  const filteredCategories = categories.filter((category) => category.type === editedTransaction.type);
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Edytuj transakcję">
-      <form onSubmit={handleUpdateTransaction} className="space-y-4">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Edytuj transakcję"
+    >
+      <form
+        onSubmit={handleUpdateTransaction}
+        className="space-y-4"
+      >
         <FormInput
           label="Kwota"
           id="amount"
@@ -101,7 +101,10 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
           required
         >
           {filteredCategories.map((category) => (
-            <option key={category.id} value={category.id}>
+            <option
+              key={category.id}
+              value={category.id}
+            >
               {category.name}
             </option>
           ))}
@@ -130,11 +133,18 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
             })
           }
         />
-        <div className="flex justify-end space-x-3 mt-6">
-          <Button variant="gray" type="button" onClick={onClose}>
+        <div className="mt-6 flex justify-end space-x-3">
+          <Button
+            variant="gray"
+            type="button"
+            onClick={onClose}
+          >
             Anuluj
           </Button>
-          <Button variant="blue" type="submit">
+          <Button
+            variant="blue"
+            type="submit"
+          >
             Zapisz zmiany
           </Button>
         </div>

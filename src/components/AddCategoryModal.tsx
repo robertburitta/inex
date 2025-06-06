@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import Modal from "./Modal";
-import FormInput from "./FormInput";
-import FormSelect from "./FormSelect";
-import FormIconSelect from "./FormIconSelect";
-import Button from "./Button";
 import { categoryService } from "@/services/categoryService";
 import { Category } from "@/types/category";
 import { TransactionType } from "@/types/transaction";
+import Button from "./Button";
+import FormIconSelect from "./FormIconSelect";
+import FormInput from "./FormInput";
+import FormSelect from "./FormSelect";
+import Modal from "./Modal";
 
 interface AddCategoryModalProps {
   isOpen: boolean;
@@ -15,15 +15,8 @@ interface AddCategoryModalProps {
   onCategoryAdded: () => void;
 }
 
-const AddCategoryModal: React.FC<AddCategoryModalProps> = ({
-  isOpen,
-  onClose,
-  userId,
-  onCategoryAdded,
-}) => {
-  const [newCategory, setNewCategory] = useState<
-    Omit<Category, "id" | "userId" | "isDefault">
-  >({
+const AddCategoryModal: React.FC<AddCategoryModalProps> = ({ isOpen, onClose, userId, onCategoryAdded }) => {
+  const [newCategory, setNewCategory] = useState<Omit<Category, "id" | "userId" | "isDefault">>({
     name: "",
     type: TransactionType.Expense,
     color: "#000000",
@@ -48,15 +41,20 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Dodaj nową kategorię">
-      <form onSubmit={handleAddCategory} className="space-y-4">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Dodaj nową kategorię"
+    >
+      <form
+        onSubmit={handleAddCategory}
+        className="space-y-4"
+      >
         <FormInput
           label="Nazwa kategorii"
           id="name"
           value={newCategory.name}
-          onChange={(e) =>
-            setNewCategory({ ...newCategory, name: e.target.value })
-          }
+          onChange={(e) => setNewCategory({ ...newCategory, name: e.target.value })}
           required
         />
         <FormSelect
@@ -85,16 +83,21 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({
           id="color"
           type="color"
           value={newCategory.color}
-          onChange={(e) =>
-            setNewCategory({ ...newCategory, color: e.target.value })
-          }
+          onChange={(e) => setNewCategory({ ...newCategory, color: e.target.value })}
           required
         />
-        <div className="flex justify-end space-x-3 mt-6">
-          <Button variant="gray" type="button" onClick={onClose}>
+        <div className="mt-6 flex justify-end space-x-3">
+          <Button
+            variant="gray"
+            type="button"
+            onClick={onClose}
+          >
             Anuluj
           </Button>
-          <Button variant="blue" type="submit">
+          <Button
+            variant="blue"
+            type="submit"
+          >
             Dodaj kategorię
           </Button>
         </div>

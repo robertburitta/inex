@@ -1,12 +1,5 @@
+import { addDoc, collection, deleteDoc, doc, getDocs, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import {
-  collection,
-  addDoc,
-  getDocs,
-  doc,
-  updateDoc,
-  deleteDoc,
-} from "firebase/firestore";
 import { Account } from "@/types/account";
 
 export const accountService = {
@@ -19,20 +12,13 @@ export const accountService = {
     })) as Account[];
   },
 
-  async addAccount(
-    userId: string,
-    account: Omit<Account, "id">
-  ): Promise<string> {
+  async addAccount(userId: string, account: Omit<Account, "id">): Promise<string> {
     const accountsRef = collection(db, "users", userId, "accounts");
     const docRef = await addDoc(accountsRef, account);
     return docRef.id;
   },
 
-  async updateAccount(
-    userId: string,
-    accountId: string,
-    account: Partial<Account>
-  ): Promise<void> {
+  async updateAccount(userId: string, accountId: string, account: Partial<Account>): Promise<void> {
     const accountRef = doc(db, "users", userId, "accounts", accountId);
     await updateDoc(accountRef, account);
   },

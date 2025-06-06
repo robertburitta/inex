@@ -8,13 +8,7 @@ interface FormInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   className?: string;
 }
 
-export default function FormInput({
-  label,
-  error,
-  className = "",
-  required = false,
-  ...props
-}: FormInputProps) {
+export default function FormInput({ label, error, className = "", required = false, ...props }: FormInputProps) {
   return (
     <div className={className}>
       <label
@@ -22,26 +16,26 @@ export default function FormInput({
         className="block text-sm font-medium text-gray-700"
       >
         {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
+        {required && <span className="ml-1 text-red-500">*</span>}
       </label>
       <div className="mt-1">
         {props.type === "color" ? (
-          <div className="relative w-full flex items-center border border-gray-300 rounded-md bg-gray-50 px-3 py-2 shadow-sm">
+          <div className="relative flex w-full items-center rounded-md border border-gray-300 bg-gray-50 px-3 py-2 shadow-sm">
             <span
-              className="inline-block w-full h-5 rounded-md border border-gray-200"
+              className="inline-block h-5 w-full rounded-md border border-gray-200"
               style={{ backgroundColor: props.value as string }}
             />
             <input
               {...props}
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
             />
           </div>
         ) : (
           <input
             {...props}
-            className={`appearance-none block w-full px-3 py-2 border ${
+            className={`block w-full appearance-none border px-3 py-2 ${
               error ? "border-red-400" : "border-gray-300"
-            } rounded-md shadow-sm placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-gray-50`}
+            } rounded-md bg-gray-50 text-gray-900 placeholder-gray-500 shadow-sm focus:border-blue-500 focus:ring-blue-500 focus:outline-none sm:text-sm`}
           />
         )}
       </div>

@@ -1,8 +1,8 @@
 "use client";
 
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useRouter, useSearchParams } from "next/navigation";
 import AuthHeader from "@/components/AuthHeader";
 
 export default function ResetPassword() {
@@ -38,23 +38,19 @@ export default function ResetPassword() {
 
   if (!oobCode) {
     return (
-      <div className="min-h-screen bg-gray-100 flex flex-col">
+      <div className="flex min-h-screen flex-col bg-gray-100">
         <AuthHeader />
-        <div className="flex-grow flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+        <div className="flex flex-grow flex-col justify-center py-12 sm:px-6 lg:px-8">
           <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-            <div className="bg-white py-8 px-4 shadow-xl sm:rounded-lg sm:px-10 border border-gray-200">
+            <div className="border border-gray-200 bg-white px-4 py-8 shadow-xl sm:rounded-lg sm:px-10">
               <div className="sm:mx-auto sm:w-full sm:max-w-md">
-                <h2 className="text-center text-3xl font-extrabold text-gray-900">
-                  Nieprawidłowy link
-                </h2>
-                <p className="mt-2 text-center text-sm text-gray-600">
-                  Link do resetowania hasła jest nieprawidłowy lub wygasł.
-                </p>
+                <h2 className="text-center text-3xl font-extrabold text-gray-900">Nieprawidłowy link</h2>
+                <p className="mt-2 text-center text-sm text-gray-600">Link do resetowania hasła jest nieprawidłowy lub wygasł.</p>
               </div>
               <div className="mt-8">
                 <button
                   onClick={() => router.push("/login")}
-                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  className="flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
                 >
                   Wróć do logowania
                 </button>
@@ -67,19 +63,17 @@ export default function ResetPassword() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col">
+    <div className="flex min-h-screen flex-col bg-gray-100">
       <AuthHeader />
-      <div className="flex-grow flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div className="flex flex-grow flex-col justify-center py-12 sm:px-6 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Ustaw nowe hasło
-          </h2>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Ustaw nowe hasło</h2>
         </div>
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-          <div className="bg-white py-8 px-4 shadow-xl sm:rounded-lg sm:px-10 border border-gray-200">
+          <div className="border border-gray-200 bg-white px-4 py-8 shadow-xl sm:rounded-lg sm:px-10">
             {error && (
               <div
-                className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded relative text-sm mb-4"
+                className="relative mb-4 rounded border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600"
                 role="alert"
               >
                 <span className="block sm:inline">{error}</span>
@@ -88,7 +82,7 @@ export default function ResetPassword() {
 
             {passwordError && (
               <div
-                className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded relative text-sm mb-4"
+                className="relative mb-4 rounded border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600"
                 role="alert"
               >
                 <span className="block sm:inline">{passwordError}</span>
@@ -97,14 +91,17 @@ export default function ResetPassword() {
 
             {success && (
               <div
-                className="bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded relative text-sm mb-4"
+                className="relative mb-4 rounded border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-600"
                 role="alert"
               >
                 <span className="block sm:inline">{success}</span>
               </div>
             )}
 
-            <form className="space-y-6" onSubmit={handleSubmit}>
+            <form
+              className="space-y-6"
+              onSubmit={handleSubmit}
+            >
               <div>
                 <label
                   htmlFor="password"
@@ -120,7 +117,7 @@ export default function ResetPassword() {
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-gray-50"
+                    className="block w-full appearance-none rounded-md border border-gray-300 bg-gray-50 px-3 py-2 text-gray-900 placeholder-gray-500 shadow-sm focus:border-blue-500 focus:ring-blue-500 focus:outline-none sm:text-sm"
                   />
                 </div>
               </div>
@@ -140,7 +137,7 @@ export default function ResetPassword() {
                     required
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-gray-50"
+                    className="block w-full appearance-none rounded-md border border-gray-300 bg-gray-50 px-3 py-2 text-gray-900 placeholder-gray-500 shadow-sm focus:border-blue-500 focus:ring-blue-500 focus:outline-none sm:text-sm"
                   />
                 </div>
               </div>
@@ -148,7 +145,7 @@ export default function ResetPassword() {
               <div>
                 <button
                   type="submit"
-                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  className="flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
                 >
                   Ustaw nowe hasło
                 </button>

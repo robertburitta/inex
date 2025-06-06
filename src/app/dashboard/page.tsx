@@ -1,21 +1,21 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import Loader from "@/components/Loader";
+import { useCallback, useEffect, useState } from "react";
+import { PlusIcon } from "@heroicons/react/24/outline";
+import { useAuth } from "@/contexts/AuthContext";
 import { accountService } from "@/services/accountService";
 import { categoryService } from "@/services/categoryService";
+import { transactionService } from "@/services/transactionService";
 import { Account } from "@/types/account";
 import { Category } from "@/types/category";
-import Card from "@/components/Card";
+import { Transaction } from "@/types/transaction";
 import AddTransactionModal from "@/components/AddTransactionModal";
 import Button from "@/components/Button";
-import { PlusIcon } from "@heroicons/react/24/outline";
-import { transactionService } from "@/services/transactionService";
-import { Transaction } from "@/types/transaction";
+import Card from "@/components/Card";
+import Footer from "@/components/Footer";
+import Header from "@/components/Header";
+import Loader from "@/components/Loader";
 
 export default function Dashboard() {
   const { user, loading } = useAuth();
@@ -33,9 +33,7 @@ export default function Dashboard() {
     try {
       setIsLoading(true);
       setError(null);
-      const userTransactions = await transactionService.getTransactions(
-        user.uid
-      );
+      const userTransactions = await transactionService.getTransactions(user.uid);
       setTransactions(userTransactions);
     } catch (err) {
       console.error("Błąd pobierania transakcji:", err);
@@ -58,9 +56,7 @@ export default function Dashboard() {
         setIsLoading(true);
         const userAccounts = await accountService.getUserAccounts(user.uid);
         const defaultCategories = await categoryService.getDefaultCategories();
-        const userCategories = await categoryService.getUserCategories(
-          user.uid
-        );
+        const userCategories = await categoryService.getUserCategories(user.uid);
         if (!cancelled) {
           setAccounts(userAccounts);
           setCategories([...userCategories, ...defaultCategories]);
@@ -79,16 +75,17 @@ export default function Dashboard() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex flex-col">
+      <div className="flex min-h-screen flex-col">
         <Header />
-        <main className="flex-grow flex items-center justify-center">
-          <div className="bg-white rounded-lg shadow-md p-6">
+        <main className="flex flex-grow items-center justify-center">
+          <div className="rounded-lg bg-white p-6 shadow-md">
             <div className="text-center">
-              <h2 className="text-xl font-semibold text-red-600 mb-4">
-                Wystąpił błąd
-              </h2>
-              <p className="text-gray-600 mb-4">{error}</p>
-              <Button variant="blue" onClick={() => window.location.reload()}>
+              <h2 className="mb-4 text-xl font-semibold text-red-600">Wystąpił błąd</h2>
+              <p className="mb-4 text-gray-600">{error}</p>
+              <Button
+                variant="blue"
+                onClick={() => window.location.reload()}
+              >
                 Spróbuj ponownie
               </Button>
             </div>
@@ -108,10 +105,10 @@ export default function Dashboard() {
     }).format(balance);
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="flex min-h-screen flex-col bg-gray-50">
       <Header />
 
-      <main className="flex-grow w-full max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+      <main className="mx-auto w-full max-w-7xl flex-grow px-4 py-10 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           <Card
             icon={
@@ -175,10 +172,8 @@ export default function Dashboard() {
           />
         </div>
 
-        <div className="flex justify-between items-center mt-8">
-          <h2 className="text-xl font-medium text-gray-900">
-            Ostatnie transakcje
-          </h2>
+        <div className="mt-8 flex items-center justify-between">
+          <h2 className="text-xl font-medium text-gray-900">Ostatnie transakcje</h2>
           <Button
             variant="blue"
             type="button"
@@ -189,16 +184,12 @@ export default function Dashboard() {
           </Button>
         </div>
 
-        <div className="mt-4 bg-white shadow overflow-hidden sm:rounded-lg">
+        <div className="mt-4 overflow-hidden bg-white shadow sm:rounded-lg">
           <div className="px-4 py-5 sm:p-6">
             {transactions.map((transaction) => (
               <p key={transaction.id}>{transaction.name}</p>
             ))}
-            {transactions.length === 0 && (
-              <p className="text-gray-500 text-center">
-                Nie dodano jeszcze żadnych transakcji
-              </p>
-            )}
+            {transactions.length === 0 && <p className="text-center text-gray-500">Nie dodano jeszcze żadnych transakcji</p>}
           </div>
         </div>
       </main>

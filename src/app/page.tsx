@@ -1,34 +1,29 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import Button from "@/components/Button";
 import { ArrowLongRightIcon } from "@heroicons/react/24/outline";
+import Button from "@/components/Button";
+import Footer from "@/components/Footer";
+import Header from "@/components/Header";
 
 export default function Home() {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="flex min-h-screen flex-col">
       <Header />
 
       <div className="flex-grow">
-        {/* Hero sekcja */}
-        <div className="relative bg-white overflow-hidden">
-          <div className="max-w-7xl mx-auto">
-            <div className="relative z-10 pb-8 bg-white sm:pb-12 md:pb-16 lg:max-w-2xl lg:w-full lg:pb-20 xl:pb-24">
-              <main className="mt-8 mx-auto max-w-7xl px-4 sm:mt-10 sm:px-6 md:mt-12 lg:mt-16 lg:px-8 xl:mt-20">
+        <div className="relative overflow-hidden bg-white">
+          <div className="mx-auto max-w-7xl">
+            <div className="relative z-10 bg-white pb-8 sm:pb-12 md:pb-16 lg:w-full lg:max-w-2xl lg:pb-20 xl:pb-24">
+              <main className="mx-auto mt-8 max-w-7xl px-4 sm:mt-10 sm:px-6 md:mt-12 lg:mt-16 lg:px-8 xl:mt-20">
                 <div className="sm:text-center lg:text-left">
-                  <h1 className="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
-                    <span className="block xl:inline">Kontroluj swoje</span>{" "}
-                    <span className="block text-blue-600 xl:inline">
-                      finanse
-                    </span>
+                  <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl md:text-6xl">
+                    <span className="block xl:inline">Kontroluj swoje</span> <span className="block text-blue-600 xl:inline">finanse</span>
                   </h1>
-                  <p className="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
-                    Śledź swoje przychody i wydatki, analizuj budżet i osiągaj
-                    swoje cele finansowe. Wszystko w jednym miejscu, dostępne z
+                  <p className="mt-3 text-base text-gray-500 sm:mx-auto sm:mt-5 sm:max-w-xl sm:text-lg md:mt-5 md:text-xl lg:mx-0">
+                    Śledź swoje przychody i wydatki, analizuj budżet i osiągaj swoje cele finansowe. Wszystko w jednym miejscu, dostępne z
                     każdego urządzenia.
                   </p>
                   <div className="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
@@ -48,26 +43,20 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Sekcja funkcji */}
-        <div className="py-24 bg-gray-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-gray-50 py-24">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="lg:text-center">
-              <h2 className="text-base text-blue-600 font-semibold tracking-wide uppercase">
-                Funkcje
-              </h2>
+              <h2 className="text-base font-semibold tracking-wide text-blue-600 uppercase">Funkcje</h2>
               <p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
                 Wszystko, czego potrzebujesz
               </p>
-              <p className="mt-4 max-w-2xl text-xl text-gray-500 lg:mx-auto">
-                Kompleksowe narzędzia do zarządzania swoimi finansami.
-              </p>
+              <p className="mt-4 max-w-2xl text-xl text-gray-500 lg:mx-auto">Kompleksowe narzędzia do zarządzania swoimi finansami.</p>
             </div>
 
             <div className="mt-10">
-              <div className="space-y-10 md:space-y-0 md:grid md:grid-cols-2 md:gap-x-8 md:gap-y-10">
-                {/* Funkcja 1 */}
+              <div className="space-y-10 md:grid md:grid-cols-2 md:space-y-0 md:gap-x-8 md:gap-y-10">
                 <div className="relative">
-                  <div className="absolute flex items-center justify-center h-12 w-12 rounded-md bg-blue-500 text-white">
+                  <div className="absolute flex h-12 w-12 items-center justify-center rounded-md bg-blue-500 text-white">
                     <svg
                       className="h-6 w-6"
                       fill="none"
@@ -83,19 +72,15 @@ export default function Home() {
                     </svg>
                   </div>
                   <div className="ml-16">
-                    <h3 className="text-lg leading-6 font-medium text-gray-900">
-                      Śledzenie wydatków
-                    </h3>
+                    <h3 className="text-lg leading-6 font-medium text-gray-900">Śledzenie wydatków</h3>
                     <p className="mt-2 text-base text-gray-500">
-                      Łatwo dodawaj i kategoryzuj swoje przychody i wydatki.
-                      Miej pełną kontrolę nad swoimi finansami.
+                      Łatwo dodawaj i kategoryzuj swoje przychody i wydatki. Miej pełną kontrolę nad swoimi finansami.
                     </p>
                   </div>
                 </div>
 
-                {/* Funkcja 2 */}
                 <div className="relative">
-                  <div className="absolute flex items-center justify-center h-12 w-12 rounded-md bg-blue-500 text-white">
+                  <div className="absolute flex h-12 w-12 items-center justify-center rounded-md bg-blue-500 text-white">
                     <svg
                       className="h-6 w-6"
                       fill="none"
@@ -111,19 +96,15 @@ export default function Home() {
                     </svg>
                   </div>
                   <div className="ml-16">
-                    <h3 className="text-lg leading-6 font-medium text-gray-900">
-                      Analiza i raporty
-                    </h3>
+                    <h3 className="text-lg leading-6 font-medium text-gray-900">Analiza i raporty</h3>
                     <p className="mt-2 text-base text-gray-500">
-                      Otrzymuj szczegółowe raporty i analizy swoich finansów.
-                      Podejmuj lepsze decyzje finansowe.
+                      Otrzymuj szczegółowe raporty i analizy swoich finansów. Podejmuj lepsze decyzje finansowe.
                     </p>
                   </div>
                 </div>
 
-                {/* Funkcja 3 */}
                 <div className="relative">
-                  <div className="absolute flex items-center justify-center h-12 w-12 rounded-md bg-blue-500 text-white">
+                  <div className="absolute flex h-12 w-12 items-center justify-center rounded-md bg-blue-500 text-white">
                     <svg
                       className="h-6 w-6"
                       fill="none"
@@ -139,19 +120,13 @@ export default function Home() {
                     </svg>
                   </div>
                   <div className="ml-16">
-                    <h3 className="text-lg leading-6 font-medium text-gray-900">
-                      Cykliczne płatności
-                    </h3>
-                    <p className="mt-2 text-base text-gray-500">
-                      Ustaw cykliczne płatności i nigdy nie zapomnij o ważnych
-                      opłatach.
-                    </p>
+                    <h3 className="text-lg leading-6 font-medium text-gray-900">Cykliczne płatności</h3>
+                    <p className="mt-2 text-base text-gray-500">Ustaw cykliczne płatności i nigdy nie zapomnij o ważnych opłatach.</p>
                   </div>
                 </div>
 
-                {/* Funkcja 4 */}
                 <div className="relative">
-                  <div className="absolute flex items-center justify-center h-12 w-12 rounded-md bg-blue-500 text-white">
+                  <div className="absolute flex h-12 w-12 items-center justify-center rounded-md bg-blue-500 text-white">
                     <svg
                       className="h-6 w-6"
                       fill="none"
@@ -167,12 +142,9 @@ export default function Home() {
                     </svg>
                   </div>
                   <div className="ml-16">
-                    <h3 className="text-lg leading-6 font-medium text-gray-900">
-                      Budżetowanie
-                    </h3>
+                    <h3 className="text-lg leading-6 font-medium text-gray-900">Budżetowanie</h3>
                     <p className="mt-2 text-base text-gray-500">
-                      Twórz i zarządzaj budżetami dla różnych kategorii
-                      wydatków. Osiągaj swoje cele finansowe.
+                      Twórz i zarządzaj budżetami dla różnych kategorii wydatków. Osiągaj swoje cele finansowe.
                     </p>
                   </div>
                 </div>
@@ -181,27 +153,23 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Sekcja "Dlaczego warto" */}
-        <div className="py-24 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-white py-24">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="lg:text-center">
-              <h2 className="text-base text-blue-600 font-semibold tracking-wide uppercase">
-                Dlaczego warto
-              </h2>
+              <h2 className="text-base font-semibold tracking-wide text-blue-600 uppercase">Dlaczego warto</h2>
               <p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
                 Proste i skuteczne zarządzanie finansami
               </p>
               <p className="mt-4 max-w-2xl text-xl text-gray-500 lg:mx-auto">
-                InEx to więcej niż tylko aplikacja do śledzenia wydatków. To
-                kompleksowe narzędzie do zarządzania swoimi finansami.
+                InEx to więcej niż tylko aplikacja do śledzenia wydatków. To kompleksowe narzędzie do zarządzania swoimi finansami.
               </p>
             </div>
 
             <div className="mt-10">
-              <div className="space-y-10 md:space-y-0 md:grid md:grid-cols-3 md:gap-x-8 md:gap-y-10">
+              <div className="space-y-10 md:grid md:grid-cols-3 md:space-y-0 md:gap-x-8 md:gap-y-10">
                 <div className="text-center">
                   <div className="flex justify-center">
-                    <div className="flex items-center justify-center h-12 w-12 rounded-md bg-blue-500 text-white">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-md bg-blue-500 text-white">
                       <svg
                         className="h-6 w-6"
                         fill="none"
@@ -217,18 +185,15 @@ export default function Home() {
                       </svg>
                     </div>
                   </div>
-                  <h3 className="mt-4 text-lg font-medium text-gray-900">
-                    Bezpieczeństwo
-                  </h3>
+                  <h3 className="mt-4 text-lg font-medium text-gray-900">Bezpieczeństwo</h3>
                   <p className="mt-2 text-base text-gray-500">
-                    Twoje dane są bezpieczne i szyfrowane. Korzystamy z
-                    najnowszych standardów bezpieczeństwa.
+                    Twoje dane są bezpieczne i szyfrowane. Korzystamy z najnowszych standardów bezpieczeństwa.
                   </p>
                 </div>
 
                 <div className="text-center">
                   <div className="flex justify-center">
-                    <div className="flex items-center justify-center h-12 w-12 rounded-md bg-blue-500 text-white">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-md bg-blue-500 text-white">
                       <svg
                         className="h-6 w-6"
                         fill="none"
@@ -244,18 +209,15 @@ export default function Home() {
                       </svg>
                     </div>
                   </div>
-                  <h3 className="mt-4 text-lg font-medium text-gray-900">
-                    Szybkość
-                  </h3>
+                  <h3 className="mt-4 text-lg font-medium text-gray-900">Szybkość</h3>
                   <p className="mt-2 text-base text-gray-500">
-                    Szybkie dodawanie transakcji i natychmiastowa synchronizacja
-                    na wszystkich urządzeniach.
+                    Szybkie dodawanie transakcji i natychmiastowa synchronizacja na wszystkich urządzeniach.
                   </p>
                 </div>
 
                 <div className="text-center">
                   <div className="flex justify-center">
-                    <div className="flex items-center justify-center h-12 w-12 rounded-md bg-blue-500 text-white">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-md bg-blue-500 text-white">
                       <svg
                         className="h-6 w-6"
                         fill="none"
@@ -271,12 +233,9 @@ export default function Home() {
                       </svg>
                     </div>
                   </div>
-                  <h3 className="mt-4 text-lg font-medium text-gray-900">
-                    Dostępność
-                  </h3>
+                  <h3 className="mt-4 text-lg font-medium text-gray-900">Dostępność</h3>
                   <p className="mt-2 text-base text-gray-500">
-                    Dostęp do aplikacji z każdego urządzenia, w każdym miejscu i
-                    o każdej porze.
+                    Dostęp do aplikacji z każdego urządzenia, w każdym miejscu i o każdej porze.
                   </p>
                 </div>
               </div>
@@ -284,57 +243,35 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Sekcja "Jak to działa" */}
-        <div className="py-24 bg-gray-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-gray-50 py-24">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="lg:text-center">
-              <h2 className="text-base text-blue-600 font-semibold tracking-wide uppercase">
-                Jak to działa
-              </h2>
+              <h2 className="text-base font-semibold tracking-wide text-blue-600 uppercase">Jak to działa</h2>
               <p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
                 Rozpocznij w 3 prostych krokach
               </p>
             </div>
 
             <div className="mt-10">
-              <div className="space-y-10 md:space-y-0 md:grid md:grid-cols-3 md:gap-x-8 md:gap-y-10">
+              <div className="space-y-10 md:grid md:grid-cols-3 md:space-y-0 md:gap-x-8 md:gap-y-10">
                 <div className="relative">
-                  <div className="flex items-center justify-center h-12 w-12 rounded-md bg-blue-500 text-white text-xl font-bold">
-                    1
-                  </div>
-                  <h3 className="mt-4 text-lg font-medium text-gray-900">
-                    Zarejestruj się
-                  </h3>
+                  <div className="flex h-12 w-12 items-center justify-center rounded-md bg-blue-500 text-xl font-bold text-white">1</div>
+                  <h3 className="mt-4 text-lg font-medium text-gray-900">Zarejestruj się</h3>
                   <p className="mt-2 text-base text-gray-500">
-                    Utwórz konto w kilka sekund. Możesz użyć swojego adresu
-                    email lub konta Google.
+                    Utwórz konto w kilka sekund. Możesz użyć swojego adresu email lub konta Google.
                   </p>
                 </div>
 
                 <div className="relative">
-                  <div className="flex items-center justify-center h-12 w-12 rounded-md bg-blue-500 text-white text-xl font-bold">
-                    2
-                  </div>
-                  <h3 className="mt-4 text-lg font-medium text-gray-900">
-                    Dodaj transakcje
-                  </h3>
-                  <p className="mt-2 text-base text-gray-500">
-                    Rozpocznij od dodania swoich pierwszych przychodów i
-                    wydatków.
-                  </p>
+                  <div className="flex h-12 w-12 items-center justify-center rounded-md bg-blue-500 text-xl font-bold text-white">2</div>
+                  <h3 className="mt-4 text-lg font-medium text-gray-900">Dodaj transakcje</h3>
+                  <p className="mt-2 text-base text-gray-500">Rozpocznij od dodania swoich pierwszych przychodów i wydatków.</p>
                 </div>
 
                 <div className="relative">
-                  <div className="flex items-center justify-center h-12 w-12 rounded-md bg-blue-500 text-white text-xl font-bold">
-                    3
-                  </div>
-                  <h3 className="mt-4 text-lg font-medium text-gray-900">
-                    Analizuj i planuj
-                  </h3>
-                  <p className="mt-2 text-base text-gray-500">
-                    Korzystaj z analiz i raportów, aby lepiej zarządzać swoimi
-                    finansami.
-                  </p>
+                  <div className="flex h-12 w-12 items-center justify-center rounded-md bg-blue-500 text-xl font-bold text-white">3</div>
+                  <h3 className="mt-4 text-lg font-medium text-gray-900">Analizuj i planuj</h3>
+                  <p className="mt-2 text-base text-gray-500">Korzystaj z analiz i raportów, aby lepiej zarządzać swoimi finansami.</p>
                 </div>
               </div>
             </div>

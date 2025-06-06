@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import Modal from "./Modal";
+import { transactionService } from "@/services/transactionService";
+import { Account, AccountType } from "@/types/account";
+import { Category } from "@/types/category";
+import { Transaction, TransactionType } from "@/types/transaction";
+import Button from "./Button";
 import FormInput from "./FormInput";
 import FormSelect from "./FormSelect";
-import Button from "./Button";
-import { Category } from "@/types/category";
-import { Account, AccountType } from "@/types/account";
-import { transactionService } from "@/services/transactionService";
-import { Transaction, TransactionType } from "@/types/transaction";
+import Modal from "./Modal";
 
 interface AddTransactionModalProps {
   isOpen: boolean;
@@ -17,14 +17,7 @@ interface AddTransactionModalProps {
   onTransactionAdded: () => void;
 }
 
-const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
-  isOpen,
-  onClose,
-  userId,
-  categories,
-  accounts,
-  onTransactionAdded,
-}) => {
+const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ isOpen, onClose, userId, categories, accounts, onTransactionAdded }) => {
   const [type, setType] = useState<TransactionType>(TransactionType.Expense);
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
@@ -33,17 +26,15 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
   const [account, setAccount] = useState("");
   const [description, setDescription] = useState("");
 
-  const [newTransaction, setNewTransaction] = useState<Omit<Transaction, "id">>(
-    {
-      name: "",
-      type: TransactionType.Expense,
-      amount: 0,
-      date: "",
-      category: "",
-      account: "",
-      description: "",
-    }
-  );
+  const [newTransaction, setNewTransaction] = useState<Omit<Transaction, "id">>({
+    name: "",
+    type: TransactionType.Expense,
+    amount: 0,
+    date: "",
+    category: "",
+    account: "",
+    description: "",
+  });
 
   const handleAddTransaction = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,8 +59,15 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
   const filteredCategories = categories.filter((cat) => cat.type === type);
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Dodaj nową transakcję">
-      <form onSubmit={handleAddTransaction} className="space-y-4">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Dodaj nową transakcję"
+    >
+      <form
+        onSubmit={handleAddTransaction}
+        className="space-y-4"
+      >
         <FormSelect
           label="Typ transakcji"
           id="type"
@@ -113,7 +111,10 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
         >
           <option value="">Wybierz kategorię</option>
           {filteredCategories.map((cat) => (
-            <option key={cat.id} value={cat.id}>
+            <option
+              key={cat.id}
+              value={cat.id}
+            >
               {cat.name}
             </option>
           ))}
@@ -127,9 +128,11 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
         >
           <option value="">Wybierz konto</option>
           {accounts.map((acc) => (
-            <option key={acc.id} value={acc.id}>
-              {acc.name} (
-              {acc.type === AccountType.Bank ? "Konto bankowe" : "Gotówka"})
+            <option
+              key={acc.id}
+              value={acc.id}
+            >
+              {acc.name} ({acc.type === AccountType.Bank ? "Konto bankowe" : "Gotówka"})
             </option>
           ))}
         </FormSelect>
@@ -141,10 +144,17 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
           onChange={(e) => setDescription(e.target.value)}
         />
         <div className="flex justify-end space-x-2">
-          <Button variant="gray" type="button" onClick={onClose}>
+          <Button
+            variant="gray"
+            type="button"
+            onClick={onClose}
+          >
             Anuluj
           </Button>
-          <Button variant="blue" type="submit">
+          <Button
+            variant="blue"
+            type="submit"
+          >
             Dodaj transakcję
           </Button>
         </div>

@@ -1,11 +1,11 @@
 "use client";
 
-import { useAuth } from "@/contexts/AuthContext";
-import { useRouter, usePathname } from "next/navigation";
-import { useState, useRef, useEffect, Fragment } from "react";
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { Transition } from "@headlessui/react";
+import { useAuth } from "@/contexts/AuthContext";
 
 function getInitials(nameOrEmail: string) {
   if (!nameOrEmail) return "?";
@@ -31,10 +31,7 @@ export default function Header() {
   useEffect(() => {
     if (!isDropdownOpen) return;
     function handleClick(e: MouseEvent) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(e.target as Node)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setIsDropdownOpen(false);
       }
     }
@@ -49,23 +46,23 @@ export default function Header() {
   ];
 
   return (
-    <header className=" bg-white shadow-sm sticky top-0 z-50 backdrop-blur">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16 items-center">
+    <header className="sticky top-0 z-50 bg-white shadow-sm backdrop-blur">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between">
           <Link
             href="/"
-            className="text-2xl font-bold text-gray-900 hover:text-gray-800 transition-colors"
+            className="text-2xl font-bold text-gray-900 transition-colors hover:text-gray-800"
           >
             InEx
           </Link>
 
-          <div className="hidden md:flex items-center space-x-6">
+          <div className="hidden items-center space-x-6 md:flex">
             {user &&
               mainMenu.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`hover:text-blue-600 font-medium transition-colors ${
+                  className={`font-medium transition-colors hover:text-blue-600 ${
                     pathname === item.href ? "text-blue-600" : "text-gray-700"
                   }`}
                 >
@@ -77,14 +74,14 @@ export default function Header() {
           <div className="flex items-center space-x-4">
             {user ? (
               <>
-                <div className="hidden md:flex">
-                  Witaj,{" "}
-                  {user.displayName?.split(" ")[0] || user.email?.split("@")[0]}
-                </div>
-                <div className="relative hidden md:block" ref={dropdownRef}>
+                <div className="hidden md:flex">Witaj, {user.displayName?.split(" ")[0] || user.email?.split("@")[0]}</div>
+                <div
+                  className="relative hidden md:block"
+                  ref={dropdownRef}
+                >
                   <button
                     onClick={() => setIsDropdownOpen((v) => !v)}
-                    className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center border-2 border-gray-300 hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all"
+                    className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-gray-300 bg-gray-200 transition-all hover:border-blue-500 focus:ring-2 focus:ring-blue-400 focus:outline-none"
                     aria-label="Menu użytkownika"
                   >
                     {user.photoURL ? (
@@ -97,9 +94,7 @@ export default function Header() {
                         priority={false}
                       />
                     ) : (
-                      <span className="text-lg font-bold text-gray-700">
-                        {getInitials(user.displayName || user.email || "")}
-                      </span>
+                      <span className="text-lg font-bold text-gray-700">{getInitials(user.displayName || user.email || "")}</span>
                     )}
                   </button>
                   <Transition
@@ -112,17 +107,17 @@ export default function Header() {
                     leaveFrom="transform opacity-100 scale-100"
                     leaveTo="transform opacity-0 scale-95"
                   >
-                    <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-2 z-50">
+                    <div className="absolute right-0 z-50 mt-2 w-48 rounded-lg border border-gray-200 bg-white py-2 shadow-lg">
                       <Link
                         href="/settings"
-                        className="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors"
+                        className="block px-4 py-2 text-gray-700 transition-colors hover:bg-gray-50"
                         onClick={() => setIsDropdownOpen(false)}
                       >
                         Ustawienia konta
                       </Link>
                       <button
                         onClick={handleLogout}
-                        className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 transition-colors"
+                        className="block w-full px-4 py-2 text-left text-red-600 transition-colors hover:bg-red-50"
                       >
                         Wyloguj się
                       </button>
@@ -131,7 +126,7 @@ export default function Header() {
                 </div>
               </>
             ) : (
-              <div className="hidden md:flex items-center space-x-2">
+              <div className="hidden items-center space-x-2 md:flex">
                 <button
                   onClick={() => router.push("/login")}
                   className="px-4 py-2 text-gray-600 hover:text-gray-900"
@@ -140,30 +135,27 @@ export default function Header() {
                 </button>
                 <button
                   onClick={() => router.push("/register")}
-                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                  className="rounded-lg bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-600"
                 >
                   Rozpocznij za darmo
                 </button>
               </div>
             )}
 
-            <div className="md:hidden flex items-center">
+            <div className="flex items-center md:hidden">
               <button
                 onClick={() => setIsMenuOpen((v) => !v)}
-                className="relative w-10 h-10 flex items-center justify-center focus:outline-none group"
+                className="group relative flex h-10 w-10 items-center justify-center focus:outline-none"
                 aria-label={isMenuOpen ? "Zamknij menu" : "Otwórz menu"}
               >
                 <span
-                  className={`absolute left-2 right-2 h-0.5 bg-gray-800 rounded transition-all duration-300 ease-in-out
-                    ${isMenuOpen ? "rotate-45 top-5" : "top-3"}`}
+                  className={`absolute right-2 left-2 h-0.5 rounded bg-gray-800 transition-all duration-300 ease-in-out ${isMenuOpen ? "top-5 rotate-45" : "top-3"}`}
                 />
                 <span
-                  className={`absolute left-2 right-2 h-0.5 bg-gray-800 rounded transition-all duration-300 ease-in-out
-                    ${isMenuOpen ? "opacity-0 top-5" : "opacity-100 top-5"}`}
+                  className={`absolute right-2 left-2 h-0.5 rounded bg-gray-800 transition-all duration-300 ease-in-out ${isMenuOpen ? "top-5 opacity-0" : "top-5 opacity-100"}`}
                 />
                 <span
-                  className={`absolute left-2 right-2 h-0.5 bg-gray-800 rounded transition-all duration-300 ease-in-out
-                    ${isMenuOpen ? "-rotate-45 top-5" : "top-7"}`}
+                  className={`absolute right-2 left-2 h-0.5 rounded bg-gray-800 transition-all duration-300 ease-in-out ${isMenuOpen ? "top-5 -rotate-45" : "top-7"}`}
                 />
               </button>
             </div>
@@ -181,13 +173,12 @@ export default function Header() {
         leaveFrom="opacity-100 translate-y-0"
         leaveTo="opacity-0 -translate-y-4"
       >
-        <div className="fixed left-0 right-0 z-50 bg-white shadow-xl px-6 py-8 flex flex-col md:hidden">
+        <div className="fixed right-0 left-0 z-50 flex flex-col bg-white px-6 py-8 shadow-xl md:hidden">
           {user && (
             <>
-              <div className="flex items-center justify-between mb-6 pb-8 border-b border-gray-200 text-lg leading-7 px-4">
-                Witaj,{" "}
-                {user.displayName?.split(" ")[0] || user.email?.split("@")[0]}
-                <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center border-2 border-gray-300">
+              <div className="mb-6 flex items-center justify-between border-b border-gray-200 px-4 pb-8 text-lg leading-7">
+                Witaj, {user.displayName?.split(" ")[0] || user.email?.split("@")[0]}
+                <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-gray-300 bg-gray-200">
                   {user.photoURL ? (
                     <Image
                       src={user.photoURL}
@@ -198,21 +189,17 @@ export default function Header() {
                       priority={false}
                     />
                   ) : (
-                    <span className="text-lg font-bold text-gray-700">
-                      {getInitials(user.displayName || user.email || "")}
-                    </span>
+                    <span className="text-lg font-bold text-gray-700">{getInitials(user.displayName || user.email || "")}</span>
                   )}
                 </div>
               </div>
-              <nav className="flex-1 flex flex-col gap-2 mb-6 pb-8 border-b border-gray-200">
+              <nav className="mb-6 flex flex-1 flex-col gap-2 border-b border-gray-200 pb-8">
                 {mainMenu.map((item) => (
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`block rounded-lg px-4 py-3 text-lg font-semibold leading-7 transition-colors ${
-                      pathname === item.href
-                        ? "text-blue-600 bg-blue-50"
-                        : "text-gray-900 hover:bg-gray-50"
+                    className={`block rounded-lg px-4 py-3 text-lg leading-7 font-semibold transition-colors ${
+                      pathname === item.href ? "bg-blue-50 text-blue-600" : "text-gray-900 hover:bg-gray-50"
                     }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
@@ -222,18 +209,18 @@ export default function Header() {
               </nav>
             </>
           )}
-          <div className=" flex flex-col gap-2">
+          <div className="flex flex-col gap-2">
             {user ? (
               <>
                 <Link
                   href="/settings"
-                  className="block rounded-lg px-4 py-3 text-lg font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                  className="block rounded-lg px-4 py-3 text-lg leading-7 font-semibold text-gray-900 hover:bg-gray-50"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Ustawienia konta
                 </Link>
                 <button
-                  className="block w-full text-left rounded-lg px-4 py-3 text-lg font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                  className="block w-full rounded-lg px-4 py-3 text-left text-lg leading-7 font-semibold text-gray-900 hover:bg-gray-50"
                   onClick={() => {
                     handleLogout();
                     setIsMenuOpen(false);
@@ -249,7 +236,7 @@ export default function Header() {
                     router.push("/login");
                     setIsMenuOpen(false);
                   }}
-                  className="block w-full text-left rounded-lg px-4 py-3 text-lg font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                  className="block w-full rounded-lg px-4 py-3 text-left text-lg leading-7 font-semibold text-gray-900 hover:bg-gray-50"
                 >
                   Zaloguj się
                 </button>
@@ -258,7 +245,7 @@ export default function Header() {
                     router.push("/register");
                     setIsMenuOpen(false);
                   }}
-                  className="block w-full text-left rounded-lg px-4 py-3 text-lg font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                  className="block w-full rounded-lg px-4 py-3 text-left text-lg leading-7 font-semibold text-gray-900 hover:bg-gray-50"
                 >
                   Rozpocznij za darmo
                 </button>

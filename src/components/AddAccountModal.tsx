@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import Modal from "./Modal";
-import FormInput from "./FormInput";
-import FormSelect from "./FormSelect";
-import Button from "./Button";
 import { accountService } from "@/services/accountService";
 import { Account, AccountType } from "@/types/account";
+import Button from "./Button";
+import FormInput from "./FormInput";
+import FormSelect from "./FormSelect";
+import Modal from "./Modal";
 
 interface AddAccountModalProps {
   isOpen: boolean;
@@ -13,12 +13,7 @@ interface AddAccountModalProps {
   onAccountAdded: () => void;
 }
 
-const AddAccountModal: React.FC<AddAccountModalProps> = ({
-  isOpen,
-  onClose,
-  userId,
-  onAccountAdded,
-}) => {
+const AddAccountModal: React.FC<AddAccountModalProps> = ({ isOpen, onClose, userId, onAccountAdded }) => {
   const [newAccount, setNewAccount] = useState<Omit<Account, "id">>({
     name: "",
     type: AccountType.Bank,
@@ -44,15 +39,20 @@ const AddAccountModal: React.FC<AddAccountModalProps> = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Dodaj nowe konto">
-      <form onSubmit={handleAddAccount} className="space-y-4">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Dodaj nowe konto"
+    >
+      <form
+        onSubmit={handleAddAccount}
+        className="space-y-4"
+      >
         <FormInput
           label="Nazwa konta"
           id="name"
           value={newAccount.name}
-          onChange={(e) =>
-            setNewAccount({ ...newAccount, name: e.target.value })
-          }
+          onChange={(e) => setNewAccount({ ...newAccount, name: e.target.value })}
           required
         />
         <FormSelect
@@ -84,11 +84,18 @@ const AddAccountModal: React.FC<AddAccountModalProps> = ({
           }
           required
         />
-        <div className="flex justify-end space-x-3 mt-6">
-          <Button variant="gray" type="button" onClick={onClose}>
+        <div className="mt-6 flex justify-end space-x-3">
+          <Button
+            variant="gray"
+            type="button"
+            onClick={onClose}
+          >
             Anuluj
           </Button>
-          <Button variant="blue" type="submit">
+          <Button
+            variant="blue"
+            type="submit"
+          >
             Dodaj konto
           </Button>
         </div>

@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
-import Modal from "./Modal";
-import FormInput from "./FormInput";
-import FormSelect from "./FormSelect";
-import Button from "./Button";
+import React, { useEffect, useState } from "react";
 import { accountService } from "@/services/accountService";
 import { Account, AccountType } from "@/types/account";
+import Button from "./Button";
+import FormInput from "./FormInput";
+import FormSelect from "./FormSelect";
+import Modal from "./Modal";
 
 interface EditAccountModalProps {
   isOpen: boolean;
@@ -14,13 +14,7 @@ interface EditAccountModalProps {
   onAccountUpdated: () => void;
 }
 
-const EditAccountModal: React.FC<EditAccountModalProps> = ({
-  isOpen,
-  onClose,
-  account,
-  userId,
-  onAccountUpdated,
-}) => {
+const EditAccountModal: React.FC<EditAccountModalProps> = ({ isOpen, onClose, account, userId, onAccountUpdated }) => {
   const [editedAccount, setEditedAccount] = useState<Account | null>(null);
 
   useEffect(() => {
@@ -34,11 +28,7 @@ const EditAccountModal: React.FC<EditAccountModalProps> = ({
     if (!editedAccount) return;
 
     try {
-      await accountService.updateAccount(
-        userId,
-        editedAccount.id,
-        editedAccount
-      );
+      await accountService.updateAccount(userId, editedAccount.id, editedAccount);
       onAccountUpdated();
       onClose();
     } catch (error) {
@@ -49,15 +39,20 @@ const EditAccountModal: React.FC<EditAccountModalProps> = ({
   if (!editedAccount) return null;
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Edytuj konto">
-      <form onSubmit={handleEditAccount} className="space-y-4">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Edytuj konto"
+    >
+      <form
+        onSubmit={handleEditAccount}
+        className="space-y-4"
+      >
         <FormInput
           label="Nazwa konta"
           id="name"
           value={editedAccount.name}
-          onChange={(e) =>
-            setEditedAccount({ ...editedAccount, name: e.target.value })
-          }
+          onChange={(e) => setEditedAccount({ ...editedAccount, name: e.target.value })}
           required
         />
         <FormSelect
@@ -89,11 +84,18 @@ const EditAccountModal: React.FC<EditAccountModalProps> = ({
           }
           required
         />
-        <div className="flex justify-end space-x-3 mt-6">
-          <Button variant="gray" type="button" onClick={onClose}>
+        <div className="mt-6 flex justify-end space-x-3">
+          <Button
+            variant="gray"
+            type="button"
+            onClick={onClose}
+          >
             Anuluj
           </Button>
-          <Button variant="blue" type="submit">
+          <Button
+            variant="blue"
+            type="submit"
+          >
             Zapisz zmiany
           </Button>
         </div>
