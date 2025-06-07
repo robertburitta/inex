@@ -1,5 +1,6 @@
 "use client";
 
+import { getTransactionType } from "@/helpers/transactionHelper";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import * as Icons from "@heroicons/react/24/outline";
@@ -58,33 +59,13 @@ export default function CategoriesPage() {
     return <Loader />;
   }
 
-  if (error) {
-    return (
-      <div className="flex min-h-screen flex-col">
-        <Header />
-        <main className="flex flex-grow items-center justify-center">
-          <div className="rounded-lg bg-white p-6 shadow-md">
-            <div className="text-center">
-              <h2 className="mb-4 text-xl font-semibold text-red-600">Wystąpił błąd</h2>
-              <p className="mb-4 text-gray-600">{error}</p>
-              <Button
-                variant="blue"
-                onClick={() => window.location.reload()}
-              >
-                Spróbuj ponownie
-              </Button>
-            </div>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
-
   return (
     <div className="flex min-h-screen flex-col bg-gray-50">
       <Header />
+
       <main className="mx-auto w-full max-w-7xl flex-grow px-4 py-10 sm:px-6 lg:px-8">
+        {error && <div className="mb-8 rounded-lg bg-red-100 p-4 text-sm text-red-700">{error}</div>}
+
         <div className="mb-8 flex items-center justify-between">
           <h1 className="text-2xl font-bold text-gray-900">Kategorie</h1>
           <Button
@@ -120,7 +101,7 @@ export default function CategoriesPage() {
                     <td className="px-6 py-4 font-medium whitespace-nowrap text-gray-900">{category.name}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={category.type === TransactionType.Expense ? "text-red-600" : "text-green-600"}>
-                        {category.type === TransactionType.Expense ? "Wydatek" : "Przychód"}
+                        {getTransactionType(category.type)}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -162,6 +143,7 @@ export default function CategoriesPage() {
           </table>
         </div>
       </main>
+
       <Footer />
 
       {user && (

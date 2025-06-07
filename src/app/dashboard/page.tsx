@@ -1,5 +1,6 @@
 "use client";
 
+import { formatBalance } from "@/helpers/transactionHelper";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { PlusIcon } from "@heroicons/react/24/outline";
@@ -9,13 +10,14 @@ import { categoryService } from "@/services/categoryService";
 import { transactionService } from "@/services/transactionService";
 import { Account } from "@/types/account";
 import { Category } from "@/types/category";
-import { Transaction } from "@/types/transaction";
+import { Transaction, TransactionType } from "@/types/transaction";
 import AddTransactionModal from "@/components/AddTransactionModal";
 import Button from "@/components/Button";
 import Card from "@/components/Card";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import Loader from "@/components/Loader";
+import TransactionsList from "@/components/TransactionsList";
 
 export default function Dashboard() {
   const { user, loading } = useAuth();
@@ -23,7 +25,11 @@ export default function Dashboard() {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [fetching, setFetching] = useState({
+    transactions: true,
+    categories: true,
+    accounts: true,
+  });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -31,15 +37,48 @@ export default function Dashboard() {
     if (!user) return;
 
     try {
-      setIsLoading(true);
+      setFetching((prev) => ({ ...prev, transactions: true }));
       setError(null);
-      const userTransactions = await transactionService.getTransactions(user.uid);
-      setTransactions(userTransactions);
+      const monthUserTransactions = await transactionService.getMonthUserTransactions(user.uid);
+      setTransactions(monthUserTransactions);
     } catch (err) {
       console.error("Błąd pobierania transakcji:", err);
       setError("Nie udało się pobrać transakcji");
     } finally {
-      setIsLoading(false);
+      setFetching((prev) => ({ ...prev, transactions: false }));
+    }
+  }, [user]);
+
+  const fetchCategories = useCallback(async () => {
+    if (!user) return;
+
+    try {
+      setFetching((prev) => ({ ...prev, categories: true }));
+      setError(null);
+      const userCategories = await categoryService.getUserCategories(user.uid);
+      const defaultCategories = await categoryService.getDefaultCategories();
+      setCategories([...userCategories, ...defaultCategories]);
+    } catch (err) {
+      console.error("Błąd pobierania kategorii:", err);
+      setError("Nie udało się pobrać kategorii");
+    } finally {
+      setFetching((prev) => ({ ...prev, categories: false }));
+    }
+  }, [user]);
+
+  const fetchAccounts = useCallback(async () => {
+    if (!user) return;
+
+    try {
+      setFetching((prev) => ({ ...prev, accounts: true }));
+      setError(null);
+      const userAccounts = await accountService.getUserAccounts(user.uid);
+      setAccounts(userAccounts);
+    } catch (err) {
+      console.error("Błąd pobierania kont:", err);
+      setError("Nie udało się pobrać kont");
+    } finally {
+      setFetching((prev) => ({ ...prev, accounts: false }));
     }
   }, [user]);
 
@@ -50,65 +89,32 @@ export default function Dashboard() {
   }, [user, loading, router]);
 
   useEffect(() => {
-    let cancelled = false;
-    if (user) {
-      (async () => {
-        setIsLoading(true);
-        const userAccounts = await accountService.getUserAccounts(user.uid);
-        const defaultCategories = await categoryService.getDefaultCategories();
-        const userCategories = await categoryService.getUserCategories(user.uid);
-        if (!cancelled) {
-          setAccounts(userAccounts);
-          setCategories([...userCategories, ...defaultCategories]);
-        }
-        setIsLoading(false);
-      })();
-    }
-    return () => {
-      cancelled = true;
-    };
-  }, [user]);
+    fetchTransactions();
+  }, [fetchTransactions]);
 
-  if (loading || isLoading) {
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
+
+  useEffect(() => {
+    fetchAccounts();
+  }, [fetchAccounts]);
+
+  if (loading || fetching.transactions || fetching.categories || fetching.accounts) {
     return <Loader />;
   }
 
-  if (error) {
-    return (
-      <div className="flex min-h-screen flex-col">
-        <Header />
-        <main className="flex flex-grow items-center justify-center">
-          <div className="rounded-lg bg-white p-6 shadow-md">
-            <div className="text-center">
-              <h2 className="mb-4 text-xl font-semibold text-red-600">Wystąpił błąd</h2>
-              <p className="mb-4 text-gray-600">{error}</p>
-              <Button
-                variant="blue"
-                onClick={() => window.location.reload()}
-              >
-                Spróbuj ponownie
-              </Button>
-            </div>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
-
-  const totalBalance = accounts.reduce((sum, acc) => sum + acc.balance, 0);
-
-  const formatBalance = (balance: number) =>
-    new Intl.NumberFormat("pl-PL", {
-      style: "currency",
-      currency: "PLN",
-    }).format(balance);
+  const totalIncome = transactions.filter((t) => t.type === TransactionType.Income).reduce((sum, t) => sum + t.amount, 0);
+  const totalExpenses = transactions.filter((t) => t.type === TransactionType.Expense).reduce((sum, t) => sum + t.amount, 0);
+  const balance = accounts.reduce((sum, account) => sum + account.balance, 0);
 
   return (
     <div className="flex min-h-screen flex-col bg-gray-50">
       <Header />
 
       <main className="mx-auto w-full max-w-7xl flex-grow px-4 py-10 sm:px-6 lg:px-8">
+        {error && <div className="mb-8 rounded-lg bg-red-100 p-4 text-sm text-red-700">{error}</div>}
+
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           <Card
             icon={
@@ -127,7 +133,7 @@ export default function Dashboard() {
               </svg>
             }
             title="Aktualne saldo (wszystkie konta)"
-            value={formatBalance(totalBalance)}
+            value={formatBalance(balance)}
             transition={{ delay: 0 * 0.05, duration: 0.3 }}
           />
           <Card
@@ -146,8 +152,8 @@ export default function Dashboard() {
                 />
               </svg>
             }
-            title="Przychody (miesiąc)"
-            value={"0,00 PLN"}
+            title={`Przychody (${new Date().toLocaleDateString("pl-PL", { month: "long" })})`}
+            value={formatBalance(totalIncome)}
             transition={{ delay: 1 * 0.05, duration: 0.3 }}
           />
           <Card
@@ -166,8 +172,8 @@ export default function Dashboard() {
                 />
               </svg>
             }
-            title="Wydatki (miesiąc)"
-            value={"0,00 PLN"}
+            title={`Wydatki (${new Date().toLocaleDateString("pl-PL", { month: "long" })})`}
+            value={formatBalance(totalExpenses)}
             transition={{ delay: 2 * 0.05, duration: 0.3 }}
           />
         </div>
@@ -186,10 +192,11 @@ export default function Dashboard() {
 
         <div className="mt-4 overflow-hidden bg-white shadow sm:rounded-lg">
           <div className="px-4 py-5 sm:p-6">
-            {transactions.map((transaction) => (
-              <p key={transaction.id}>{transaction.name}</p>
-            ))}
-            {transactions.length === 0 && <p className="text-center text-gray-500">Nie dodano jeszcze żadnych transakcji</p>}
+            <TransactionsList
+              userId={user?.uid}
+              categories={categories}
+              accounts={accounts}
+            />
           </div>
         </div>
       </main>
@@ -201,7 +208,10 @@ export default function Dashboard() {
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           userId={user?.uid}
-          onTransactionAdded={fetchTransactions}
+          onTransactionAdded={() => {
+            fetchTransactions();
+            fetchAccounts();
+          }}
           categories={categories}
           accounts={accounts}
         />

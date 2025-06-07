@@ -34,7 +34,6 @@ const FormIconSelect: React.FC<FormIconSelectProps> = ({ label, value, onChange,
   }, []);
 
   const selectedIcon = AVAILABLE_ICONS.find((icon) => icon.name === value) || AVAILABLE_ICONS[0];
-
   const filteredIcons = AVAILABLE_ICONS.filter((icon) => icon.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
   return (
@@ -59,7 +58,7 @@ const FormIconSelect: React.FC<FormIconSelectProps> = ({ label, value, onChange,
       </button>
 
       {isOpen && (
-        <div className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md border border-gray-200 bg-white shadow-lg">
+        <div className="absolute z-10 mt-1 max-h-60 w-full rounded-md border border-gray-200 bg-white shadow-lg">
           <div className="border-b border-gray-200 p-2">
             <input
               type="text"
@@ -69,7 +68,7 @@ const FormIconSelect: React.FC<FormIconSelectProps> = ({ label, value, onChange,
               className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500 focus:outline-none"
             />
           </div>
-          <div className="grid grid-cols-7 gap-2 p-2">
+          <div className="grid max-h-46 grid-cols-7 gap-2 overflow-y-auto p-2">
             {filteredIcons.map(({ name, icon: Icon }) => (
               <button
                 key={name}

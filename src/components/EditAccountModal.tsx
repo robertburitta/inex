@@ -1,3 +1,4 @@
+import { getAccountType } from "@/helpers/accountHelper";
 import React, { useEffect, useState } from "react";
 import { accountService } from "@/services/accountService";
 import { Account, AccountType } from "@/types/account";
@@ -67,8 +68,14 @@ const EditAccountModal: React.FC<EditAccountModalProps> = ({ isOpen, onClose, ac
           }
           required
         >
-          <option value={AccountType.Bank}>Konto bankowe</option>
-          <option value={AccountType.Cash}>Gotówka</option>
+          {Object.values(AccountType).map((type) => (
+            <option
+              key={type}
+              value={type}
+            >
+              {getAccountType(type)}
+            </option>
+          ))}
         </FormSelect>
         <FormInput
           label="Saldo"

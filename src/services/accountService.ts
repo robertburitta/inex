@@ -1,8 +1,18 @@
-import { addDoc, collection, deleteDoc, doc, getDocs, updateDoc } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Account } from "@/types/account";
 
 export const accountService = {
+  async getUserAccount(userId: string, accountId: string): Promise<Account> {
+    const accountsRef = collection(db, "users", userId, "accounts");
+    const docRef = doc(accountsRef, accountId);
+    const docSnap = await getDoc(docRef);
+    return {
+      id: docSnap.id,
+      ...docSnap.data(),
+    } as Account;
+  },
+
   async getUserAccounts(userId: string): Promise<Account[]> {
     const accountsRef = collection(db, "users", userId, "accounts");
     const querySnapshot = await getDocs(accountsRef);

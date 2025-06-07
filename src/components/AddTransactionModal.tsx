@@ -1,6 +1,9 @@
+import { getAccountType } from "@/helpers/accountHelper";
+import { getTransactionType } from "@/helpers/transactionHelper";
+import { Timestamp } from "firebase/firestore";
 import React, { useState } from "react";
 import { transactionService } from "@/services/transactionService";
-import { Account, AccountType } from "@/types/account";
+import { Account } from "@/types/account";
 import { Category } from "@/types/category";
 import { Transaction, TransactionType } from "@/types/transaction";
 import Button from "./Button";
@@ -18,19 +21,11 @@ interface AddTransactionModalProps {
 }
 
 const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ isOpen, onClose, userId, categories, accounts, onTransactionAdded }) => {
-  const [type, setType] = useState<TransactionType>(TransactionType.Expense);
-  const [name, setName] = useState("");
-  const [amount, setAmount] = useState("");
-  const [date, setDate] = useState("");
-  const [category, setCategory] = useState("");
-  const [account, setAccount] = useState("");
-  const [description, setDescription] = useState("");
-
   const [newTransaction, setNewTransaction] = useState<Omit<Transaction, "id">>({
     name: "",
     type: TransactionType.Expense,
     amount: 0,
-    date: "",
+    date: Timestamp.fromDate(new Date()),
     category: "",
     account: "",
     description: "",
@@ -44,7 +39,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ isOpen, onClo
         name: "",
         type: TransactionType.Expense,
         amount: 0,
-        date: "",
+        date: Timestamp.fromDate(new Date()),
         category: "",
         account: "",
         description: "",
@@ -56,7 +51,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ isOpen, onClo
     }
   };
 
-  const filteredCategories = categories.filter((cat) => cat.type === type);
+  const filteredCategories = categories.filter((cat) => cat.type === newTransaction.type);
 
   return (
     <Modal
@@ -71,42 +66,50 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ isOpen, onClo
         <FormSelect
           label="Typ transakcji"
           id="type"
-          value={type}
-          onChange={(e) => setType(e.target.value as TransactionType)}
+          value={newTransaction.type}
+          onChange={(e) => setNewTransaction({ ...newTransaction, type: e.target.value as TransactionType })}
           required
         >
-          <option value={TransactionType.Expense}>Wydatek</option>
-          <option value={TransactionType.Income}>Przychód</option>
+          {Object.values(TransactionType).map((type) => (
+            <option
+              key={type}
+              value={type}
+            >
+              {getTransactionType(type)}
+            </option>
+          ))}
         </FormSelect>
         <FormInput
           label="Nazwa"
           id="name"
           type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          value={newTransaction.name}
+          onChange={(e) => setNewTransaction({ ...newTransaction, name: e.target.value })}
           required
         />
         <FormInput
           label="Kwota"
           id="amount"
           type="number"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
+          value={newTransaction.amount}
+          onChange={(e) => setNewTransaction({ ...newTransaction, amount: Number(e.target.value) })}
           required
         />
         <FormInput
           label="Data"
           id="date"
           type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
+          value={newTransaction.date.toDate().toISOString().split("T")[0]}
+          onChange={(e) => {
+            setNewTransaction({ ...newTransaction, date: Timestamp.fromDate(new Date(e.target.value)) });
+          }}
           required
         />
         <FormSelect
           label="Kategoria"
           id="category"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
+          value={newTransaction.category}
+          onChange={(e) => setNewTransaction({ ...newTransaction, category: e.target.value })}
           required
         >
           <option value="">Wybierz kategorię</option>
@@ -122,8 +125,8 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ isOpen, onClo
         <FormSelect
           label="Konto"
           id="account"
-          value={account}
-          onChange={(e) => setAccount(e.target.value)}
+          value={newTransaction.account}
+          onChange={(e) => setNewTransaction({ ...newTransaction, account: e.target.value })}
           required
         >
           <option value="">Wybierz konto</option>
@@ -132,7 +135,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ isOpen, onClo
               key={acc.id}
               value={acc.id}
             >
-              {acc.name} ({acc.type === AccountType.Bank ? "Konto bankowe" : "Gotówka"})
+              {acc.name} ({getAccountType(acc.type)})
             </option>
           ))}
         </FormSelect>
@@ -140,8 +143,8 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ isOpen, onClo
           label="Opis (opcjonalny)"
           id="description"
           type="textarea"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          value={newTransaction.description}
+          onChange={(e) => setNewTransaction({ ...newTransaction, description: e.target.value })}
         />
         <div className="flex justify-end space-x-2">
           <Button

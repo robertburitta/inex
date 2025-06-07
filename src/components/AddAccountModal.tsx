@@ -1,3 +1,4 @@
+import { getAccountType } from "@/helpers/accountHelper";
 import React, { useState } from "react";
 import { accountService } from "@/services/accountService";
 import { Account, AccountType } from "@/types/account";
@@ -67,8 +68,14 @@ const AddAccountModal: React.FC<AddAccountModalProps> = ({ isOpen, onClose, user
           }
           required
         >
-          <option value={AccountType.Bank}>Konto bankowe</option>
-          <option value={AccountType.Cash}>Gotówka</option>
+          {Object.values(AccountType).map((type) => (
+            <option
+              key={type}
+              value={type}
+            >
+              {getAccountType(type)}
+            </option>
+          ))}
         </FormSelect>
         <FormInput
           label="Saldo początkowe"

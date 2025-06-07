@@ -1,11 +1,13 @@
 "use client";
 
+import { getAccountIcon, getAccountType } from "@/helpers/accountHelper";
+import { formatBalance } from "@/helpers/transactionHelper";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { PencilIcon, PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useAuth } from "@/contexts/AuthContext";
 import { accountService } from "@/services/accountService";
-import { Account, AccountType } from "@/types/account";
+import { Account } from "@/types/account";
 import AddAccountModal from "@/components/AddAccountModal";
 import Button from "@/components/Button";
 import Card from "@/components/Card";
@@ -19,13 +21,29 @@ export default function AccountsPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const [accounts, setAccounts] = useState<Account[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [fetching, setFetching] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [editAccount, setEditAccount] = useState<Account | null>(null);
   const [deleteAccount, setDeleteAccount] = useState<Account | null>(null);
+
+  const fetchAccounts = useCallback(async () => {
+    if (!user) return;
+
+    try {
+      setFetching(true);
+      setError(null);
+      const userAccounts = await accountService.getUserAccounts(user.uid);
+      setAccounts(userAccounts);
+    } catch (err) {
+      console.error("Błąd pobierania kont:", err);
+      setError("Nie udało się pobrać kont");
+    } finally {
+      setFetching(false);
+    }
+  }, [user]);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -34,60 +52,20 @@ export default function AccountsPage() {
   }, [user, loading, router]);
 
   useEffect(() => {
-    let cancelled = false;
-    if (user) {
-      (async () => {
-        try {
-          setIsLoading(true);
-          setError(null);
-          const userAccounts = await accountService.getUserAccounts(user.uid);
-          if (!cancelled) {
-            setAccounts(userAccounts);
-          }
-        } catch (err) {
-          console.error("Błąd pobierania kont:", err);
-          if (!cancelled) {
-            setError("Nie udało się pobrać listy kont");
-          }
-        } finally {
-          if (!cancelled) {
-            setIsLoading(false);
-          }
-        }
-      })();
-    }
-    return () => {
-      cancelled = true;
-    };
-  }, [user]);
+    fetchAccounts();
+  }, [fetchAccounts]);
 
-  if (loading || isLoading) {
+  if (loading || fetching) {
     return <Loader />;
   }
-
-  const getAccountIcon = (type: AccountType) => {
-    switch (type) {
-      case AccountType.Bank:
-        return "🏦";
-      case AccountType.Cash:
-        return "💵";
-      default:
-        return "📊";
-    }
-  };
-
-  const formatBalance = (balance: number) => {
-    return new Intl.NumberFormat("pl-PL", {
-      style: "currency",
-      currency: "PLN",
-    }).format(balance);
-  };
 
   return (
     <div className="flex min-h-screen flex-col bg-gray-50">
       <Header />
 
       <main className="mx-auto w-full max-w-7xl flex-grow px-4 py-10 sm:px-6 lg:px-8">
+        {error && <div className="mb-8 rounded-lg bg-red-100 p-4 text-sm text-red-700">{error}</div>}
+
         <div className="mb-8 flex items-center justify-between">
           <h1 className="text-2xl font-bold text-gray-900">Moje konta</h1>
           <Button
@@ -99,8 +77,6 @@ export default function AccountsPage() {
             Dodaj konto
           </Button>
         </div>
-
-        {error && <div className="mb-4 rounded-lg bg-red-100 p-4 text-sm text-red-700">{error}</div>}
 
         {accounts.length === 0 ? (
           <div className="flex flex-col items-center justify-center rounded-lg bg-white py-12 text-center shadow">
@@ -125,9 +101,7 @@ export default function AccountsPage() {
                 value={
                   <>
                     <span className="text-2xl font-semibold text-gray-900">{formatBalance(account.balance)}</span>
-                    <span className="mt-1 block text-xs text-gray-500">
-                      {account.type === AccountType.Bank ? "Konto bankowe" : "Gotówka"}
-                    </span>
+                    <span className="mt-1 block text-xs text-gray-500">{getAccountType(account.type)}</span>
                   </>
                 }
                 transition={{ delay: i * 0.05, duration: 0.3 }}
@@ -169,21 +143,21 @@ export default function AccountsPage() {
             isOpen={showAddModal}
             onClose={() => setShowAddModal(false)}
             userId={user.uid}
-            onAccountAdded={() => setAccounts([...accounts])}
+            onAccountAdded={fetchAccounts}
           />
           <EditAccountModal
             isOpen={showEditModal}
             onClose={() => setShowEditModal(false)}
             account={editAccount}
             userId={user.uid}
-            onAccountUpdated={() => setAccounts([...accounts])}
+            onAccountUpdated={fetchAccounts}
           />
           <DeleteAccountModal
             isOpen={showDeleteModal}
             onClose={() => setShowDeleteModal(false)}
             account={deleteAccount}
             userId={user.uid}
-            onAccountDeleted={() => setAccounts([...accounts])}
+            onAccountDeleted={fetchAccounts}
           />
         </>
       )}

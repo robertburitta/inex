@@ -1,3 +1,4 @@
+import { getTransactionType } from "@/helpers/transactionHelper";
 import React, { useState } from "react";
 import { categoryService } from "@/services/categoryService";
 import { Category } from "@/types/category";
@@ -69,8 +70,14 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({ isOpen, onClose, us
           }
           required
         >
-          <option value={TransactionType.Expense}>Wydatek</option>
-          <option value={TransactionType.Income}>Przychód</option>
+          {Object.values(TransactionType).map((type) => (
+            <option
+              key={type}
+              value={type}
+            >
+              {getTransactionType(type)}
+            </option>
+          ))}
         </FormSelect>
         <FormIconSelect
           label="Ikona"

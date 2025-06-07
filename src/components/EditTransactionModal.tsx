@@ -1,3 +1,5 @@
+import { getTransactionType } from "@/helpers/transactionHelper";
+import { Timestamp } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { transactionService } from "@/services/transactionService";
 import { Category } from "@/types/category";
@@ -85,8 +87,14 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
             })
           }
         >
-          <option value="expense">Wydatek</option>
-          <option value="income">Przychód</option>
+          {Object.values(TransactionType).map((type) => (
+            <option
+              key={type}
+              value={type}
+            >
+              {getTransactionType(type)}
+            </option>
+          ))}
         </FormSelect>
         <FormSelect
           label="Kategoria"
@@ -113,11 +121,11 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
           label="Data"
           id="date"
           type="date"
-          value={editedTransaction.date}
+          value={editedTransaction.date.toDate().toISOString().split("T")[0]}
           onChange={(e) =>
             setEditedTransaction({
               ...editedTransaction,
-              date: e.target.value,
+              date: Timestamp.fromDate(new Date(e.target.value)),
             })
           }
           required
