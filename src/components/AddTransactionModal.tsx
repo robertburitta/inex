@@ -3,7 +3,7 @@ import { getTransactionType } from "@/helpers/transactionHelper";
 import { Timestamp } from "firebase/firestore";
 import React, { useState } from "react";
 import { transactionService } from "@/services/transactionService";
-import { Account } from "@/types/account";
+import { Account, Currency } from "@/types/account";
 import { Category } from "@/types/category";
 import { Transaction, TransactionType } from "@/types/transaction";
 import Button from "./Button";
@@ -25,6 +25,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ isOpen, onClo
     name: "",
     type: TransactionType.Expense,
     amount: 0,
+    currency: Currency.PLN,
     date: Timestamp.fromDate(new Date()),
     category: "",
     account: "",
@@ -39,6 +40,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ isOpen, onClo
         name: "",
         type: TransactionType.Expense,
         amount: 0,
+        currency: Currency.PLN,
         date: Timestamp.fromDate(new Date()),
         category: "",
         account: "",

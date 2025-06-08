@@ -1,7 +1,7 @@
 import { getAccountType } from "@/helpers/accountHelper";
 import React, { useState } from "react";
 import { accountService } from "@/services/accountService";
-import { Account, AccountType } from "@/types/account";
+import { Account, AccountType, Currency } from "@/types/account";
 import Button from "./Button";
 import FormInput from "./FormInput";
 import FormSelect from "./FormSelect";
@@ -19,7 +19,7 @@ const AddAccountModal: React.FC<AddAccountModalProps> = ({ isOpen, onClose, user
     name: "",
     type: AccountType.Bank,
     balance: 0,
-    currency: "PLN",
+    currency: Currency.PLN,
   });
 
   const handleAddAccount = async (e: React.FormEvent) => {
@@ -30,7 +30,7 @@ const AddAccountModal: React.FC<AddAccountModalProps> = ({ isOpen, onClose, user
         name: "",
         type: AccountType.Bank,
         balance: 0,
-        currency: "PLN",
+        currency: Currency.PLN,
       });
       onAccountAdded();
       onClose();

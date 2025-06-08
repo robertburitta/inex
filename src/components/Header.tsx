@@ -41,6 +41,7 @@ export default function Header() {
 
   const mainMenu = [
     { label: "Panel", href: "/dashboard" },
+    { label: "Transakcje", href: "/transactions" },
     { label: "Konta", href: "/accounts" },
     { label: "Kategorie", href: "/categories" },
   ];

@@ -1,16 +1,17 @@
 "use client";
 
-import { formatBalance } from "@/helpers/transactionHelper";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { PlusIcon } from "@heroicons/react/24/outline";
 import { useAuth } from "@/contexts/AuthContext";
 import { accountService } from "@/services/accountService";
 import { categoryService } from "@/services/categoryService";
 import { transactionService } from "@/services/transactionService";
-import { Account, Currency } from "@/types/account";
+import { Account } from "@/types/account";
 import { Category } from "@/types/category";
-import { Transaction, TransactionType } from "@/types/transaction";
-import Card from "@/components/Card";
+import { Transaction } from "@/types/transaction";
+import AddTransactionModal from "@/components/AddTransactionModal";
+import Button from "@/components/Button";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import Loader from "@/components/Loader";
@@ -21,13 +22,13 @@ export default function Dashboard() {
   const router = useRouter();
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [lastTransactions, setLastTransactions] = useState<Transaction[]>([]);
-  const [monthTransactions, setMonthTransactions] = useState<Transaction[]>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [fetching, setFetching] = useState({
     transactions: true,
     categories: true,
     accounts: true,
   });
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const fetchTransactions = useCallback(async () => {
@@ -36,10 +37,8 @@ export default function Dashboard() {
     try {
       setFetching((prev) => ({ ...prev, transactions: true }));
       setError(null);
-      const lastUserTransactions = await transactionService.getLastUserTransactions(user.uid);
-      setLastTransactions(lastUserTransactions);
-      const monthUserTransactions = await transactionService.getMonthUserTransactions(user.uid);
-      setMonthTransactions(monthUserTransactions);
+      const userTransactions = await transactionService.getAllUserTransactions(user.uid);
+      setTransactions(userTransactions);
     } catch (err) {
       console.error("Błąd pobierania transakcji:", err);
       setError("Nie udało się pobrać transakcji");
@@ -103,10 +102,6 @@ export default function Dashboard() {
     return <Loader />;
   }
 
-  const totalIncome = monthTransactions.filter((t) => t.type === TransactionType.Income).reduce((sum, t) => sum + t.amount, 0);
-  const totalExpenses = monthTransactions.filter((t) => t.type === TransactionType.Expense).reduce((sum, t) => sum + t.amount, 0);
-  const balance = accounts.reduce((sum, account) => sum + account.balance, 0);
-
   return (
     <div className="flex min-h-screen flex-col bg-gray-50">
       <Header />
@@ -114,77 +109,22 @@ export default function Dashboard() {
       <main className="mx-auto w-full max-w-7xl flex-grow px-4 py-10 sm:px-6 lg:px-8">
         {error && <div className="mb-8 rounded-lg bg-red-100 p-4 text-sm text-red-700">{error}</div>}
 
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          <Card
-            icon={
-              <svg
-                className="h-6 w-6 text-gray-400"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-            }
-            title="Aktualne saldo (wszystkie konta)"
-            value={formatBalance(balance, Currency.PLN)}
-            transition={{ delay: 0 * 0.05, duration: 0.3 }}
-          />
-          <Card
-            icon={
-              <svg
-                className="h-6 w-6 text-green-400"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                />
-              </svg>
-            }
-            title={`Przychody (${new Date().toLocaleDateString("pl-PL", { month: "long" })})`}
-            value={formatBalance(totalIncome, Currency.PLN)}
-            transition={{ delay: 1 * 0.05, duration: 0.3 }}
-          />
-          <Card
-            icon={
-              <svg
-                className="h-6 w-6 text-red-400"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M20 12H4"
-                />
-              </svg>
-            }
-            title={`Wydatki (${new Date().toLocaleDateString("pl-PL", { month: "long" })})`}
-            value={formatBalance(totalExpenses, Currency.PLN)}
-            transition={{ delay: 2 * 0.05, duration: 0.3 }}
-          />
-        </div>
-
-        <div className="mt-8 flex items-center justify-between">
-          <h2 className="text-xl font-medium text-gray-900">Ostatnie transakcje</h2>
+        <div className="mb-8 flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-gray-900">Transakcje</h1>
+          <Button
+            variant="blue"
+            type="button"
+            onClick={() => setIsModalOpen(true)}
+          >
+            <PlusIcon className="h-5 w-5" />
+            Dodaj transakcję
+          </Button>
         </div>
 
         <div className="mt-4 overflow-hidden bg-white shadow sm:rounded-lg">
           <div className="px-4 py-5 sm:p-6">
             <TransactionsList
-              transactions={lastTransactions}
+              transactions={transactions}
               categories={categories}
               accounts={accounts}
             />
@@ -193,6 +133,20 @@ export default function Dashboard() {
       </main>
 
       <Footer />
+
+      {user && (
+        <AddTransactionModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          userId={user?.uid}
+          onTransactionAdded={() => {
+            fetchTransactions();
+            fetchAccounts();
+          }}
+          categories={categories}
+          accounts={accounts}
+        />
+      )}
     </div>
   );
 }

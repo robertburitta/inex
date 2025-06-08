@@ -16,6 +16,9 @@ import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import Loader from "@/components/Loader";
 
+type SortField = "name" | "type";
+type SortDirection = "asc" | "desc";
+
 export default function CategoriesPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
@@ -27,6 +30,8 @@ export default function CategoriesPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [editCategory, setEditCategory] = useState<Category | null>(null);
   const [deleteCategory, setDeleteCategory] = useState<Category | null>(null);
+  const [sortField, setSortField] = useState<SortField>("name");
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
 
   const fetchCategories = useCallback(async () => {
     if (!user) return;
@@ -54,6 +59,23 @@ export default function CategoriesPage() {
   useEffect(() => {
     fetchCategories();
   }, [fetchCategories]);
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortDirection("asc");
+    }
+  };
+
+  const sortedCategories = [...categories].sort((a, b) => {
+    if (sortField === "name") {
+      return sortDirection === "asc" ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
+    } else {
+      return sortDirection === "asc" ? a.type.localeCompare(b.type) : b.type.localeCompare(a.type);
+    }
+  });
 
   if (loading || isLoading) {
     return <Loader />;
@@ -84,14 +106,30 @@ export default function CategoriesPage() {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">Ikona</th>
-                <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">Nazwa</th>
-                <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">Typ</th>
+                <th
+                  className="cursor-pointer px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase hover:bg-gray-100"
+                  onClick={() => handleSort("name")}
+                >
+                  <div className="flex items-center space-x-1">
+                    <span>Nazwa</span>
+                    {sortField === "name" && <span>{sortDirection === "asc" ? "↑" : "↓"}</span>}
+                  </div>
+                </th>
+                <th
+                  className="cursor-pointer px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase hover:bg-gray-100"
+                  onClick={() => handleSort("type")}
+                >
+                  <div className="flex items-center space-x-1">
+                    <span>Typ</span>
+                    {sortField === "type" && <span>{sortDirection === "asc" ? "↑" : "↓"}</span>}
+                  </div>
+                </th>
                 <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">Kolor</th>
                 <th className="px-6 py-3"></th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 bg-white">
-              {categories.map((category) => {
+              {sortedCategories.map((category) => {
                 const CategoryIcon = Icons[`${category.icon}Icon` as keyof typeof Icons];
                 return (
                   <tr key={category.id}>

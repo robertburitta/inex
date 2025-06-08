@@ -1,4 +1,5 @@
 import { Timestamp } from "firebase/firestore";
+import { Currency } from "./account";
 
 export enum TransactionType {
   Income = "income",
@@ -10,6 +11,7 @@ export interface Transaction {
   type: TransactionType;
   name: string;
   amount: number;
+  currency: Currency;
   date: Timestamp;
   category: string;
   account: string;

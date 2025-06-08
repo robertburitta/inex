@@ -1,32 +1,20 @@
+"use client";
+
 import { getAccountType } from "@/helpers/accountHelper";
 import { formatBalance, formatDate } from "@/helpers/transactionHelper";
-import React, { useCallback, useEffect, useState } from "react";
+import React from "react";
 import * as Icons from "@heroicons/react/24/outline";
-import { transactionService } from "@/services/transactionService";
 import { Account } from "@/types/account";
 import { Category } from "@/types/category";
 import { Transaction, TransactionType } from "@/types/transaction";
 
 interface TransactionsListProps {
-  userId?: string;
+  transactions: Transaction[];
   categories: Category[];
   accounts: Account[];
 }
 
-const TransactionsList: React.FC<TransactionsListProps> = ({ userId, categories, accounts }) => {
-  const [lastUserTransactions, setLastUserTransactions] = useState<Transaction[]>([]);
-
-  const fetchTransactions = useCallback(async () => {
-    if (!userId) return;
-
-    try {
-      const lastUserTransactions = await transactionService.getLastUserTransactions(userId);
-      setLastUserTransactions(lastUserTransactions);
-    } catch (err) {
-      console.error("Błąd pobierania transakcji:", err);
-    }
-  }, [userId]);
-
+const TransactionsList: React.FC<TransactionsListProps> = ({ transactions, categories, accounts }) => {
   const getCategoryIcon = (categoryId: string) => {
     const category = categories.find((c) => c.id === categoryId);
     const Icon = category ? Icons[`${category.icon}Icon` as keyof typeof Icons] : Icons.TagIcon;
@@ -43,16 +31,12 @@ const TransactionsList: React.FC<TransactionsListProps> = ({ userId, categories,
     return account ?? ({ name: "Nieznane konto" } as Account);
   };
 
-  useEffect(() => {
-    fetchTransactions();
-  }, [fetchTransactions]);
-
   return (
     <div className="space-y-4">
-      {lastUserTransactions.length === 0 ? (
+      {transactions.length === 0 ? (
         <p className="text-center text-gray-500">Nie dodano jeszcze żadnych transakcji</p>
       ) : (
-        lastUserTransactions
+        transactions
           .sort((a, b) => b.date.toDate().getTime() - a.date.toDate().getTime())
           .map((transaction) => {
             const CategoryIcon = getCategoryIcon(transaction.category);
@@ -91,7 +75,7 @@ const TransactionsList: React.FC<TransactionsListProps> = ({ userId, categories,
                 <div className="flex items-center space-x-4">
                   <span className={`font-medium ${transaction.type === TransactionType.Income ? "text-green-600" : "text-red-600"}`}>
                     {transaction.type === TransactionType.Income ? "+" : "-"}
-                    {formatBalance(transaction.amount)}
+                    {formatBalance(transaction.amount, transaction.currency)}
                   </span>
                 </div>
               </div>
